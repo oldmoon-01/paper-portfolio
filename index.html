@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>纸团作品集</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* 布局：全屏 3D 舞台（作品）；关于 / 联系是从右侧推入的方格纸面板，左边露出纸团舞台。
+     单一视觉：蓝墙 + 灰白地面，不跟随系统深色模式。英文 / 中文 / 数字分别使用三套字体。 */
+  :root {
+    color-scheme: light;
+    --wall: #3a5bff;      /* 墙（3D 里受光后会略深） */
+    --wall-lit: #2c46c4;  /* 墙在画面中的实际颜色，用于 HTML 背景和强调色 */
+    --ink: #1b1d22;
+    --ink-soft: rgba(27, 29, 34, 0.6);
+    --ink-faint: rgba(27, 29, 34, 0.14);
+    --on-wall: #ffffff;
+    --on-wall-soft: rgba(255, 255, 255, 0.72);
+    --paper: #f3f2ed;
+    --paper-line: rgba(44, 70, 196, 0.08);
+    --ok: #1f8a5b;
+    --font: "Space Grotesk", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", monospace;
+    --gutter-l: max(20px, env(safe-area-inset-left, 0px));
+    --gutter-r: max(20px, env(safe-area-inset-right, 0px));
+    --top: calc(env(safe-area-inset-top, 0px) + 22px);
+  }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--wall-lit); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+  #app { position: fixed; inset: 0; }
+  #app canvas { display: block; }
+  [hidden] { display: none !important; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--wall-lit); outline-offset: 3px; }
+
+  .hud { position: fixed; z-index: 5; pointer-events: none; transition: color .3s ease; }
+  .hud a, .hud button { pointer-events: auto; }
+
+  /* 左上：名字（在蓝墙上 → 白字） */
+  .id { top: var(--top); left: var(--gutter-l); display: grid; gap: 6px; color: var(--on-wall); }
+  .id-name { margin: 0; font-size: clamp(20px, 2.12vw, 25px); font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+  .id-name a { text-decoration: none; }
+  .id-role { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.055em; text-transform: uppercase; color: var(--on-wall-soft); }
+
+  /* 右上：导航 */
+  .nav { top: calc(var(--top) + 2px); right: var(--gutter-r); display: flex; gap: 22px; font-size: 14px; font-weight: 500; color: var(--on-wall); }
+  .nav a { text-decoration: none; padding-bottom: 3px; border-bottom: 2px solid transparent; }
+  .nav a:hover { border-bottom-color: currentColor; }
+  .nav a[aria-current="page"] { border-bottom-color: currentColor; }
+
+  /* 左下：一句话 + 操作提示（在地面上 → 深色字） */
+  .lede { bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); left: var(--gutter-l); max-width: min(480px, calc(100vw - 150px)); display: grid; gap: 10px; transition: opacity .35s ease, transform .35s ease; }
+  .lede-line { margin: 0; font-size: clamp(20px, 2.2vw, 30px); font-weight: 500; line-height: 1.3; text-wrap: balance; }
+  .lede-hint { font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--ink-soft); display: flex; gap: 6px 14px; flex-wrap: wrap; }
+  .lede-hint kbd { font-family: inherit; font-size: 11px; border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; }
+
+  /* 右下：计数 */
+  .tally { bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); right: var(--gutter-r); text-align: right; font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--ink-soft); display: grid; gap: 5px; transition: opacity .35s ease; }
+  .tally strong { font-family: var(--font-mono); font-weight: 600; font-size: 34px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums slashed-zero; letter-spacing: -0.085em; }
+
+  .is-open .lede, .is-sheet .lede { opacity: 0; transform: translateY(8px); }
+  .is-open .tally, .is-sheet .tally { opacity: 0; }
+
+  /* 展开纸团时的信息条 */
+  .card {
+    position: fixed; z-index: 3; left: 50%; transform: translateX(-50%);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+    width: min(680px, calc(100vw - 32px)); box-sizing: border-box;
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px 20px;
+    padding: 14px 14px 14px 20px; background: var(--paper);
+    box-shadow: 0 10px 30px rgba(10, 20, 80, 0.22);
+    animation: card-in .45s cubic-bezier(.2,.8,.2,1) .35s both;
+  }
+  @keyframes card-in { from { opacity: 0; transform: translate(-50%, 16px); } }
+  .card-text { min-width: 0; display: grid; gap: 3px; }
+  .card-no { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.055em; color: var(--wall-lit); font-variant-numeric: tabular-nums slashed-zero; }
+  .card-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card-meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+  .card-actions { display: flex; gap: 8px; }
+  .btn {
+    font: 500 14px/1 var(--font); color: var(--paper); background: var(--ink);
+    border: 1.5px solid var(--ink); padding: 12px 16px; cursor: pointer; text-decoration: none; white-space: nowrap; border-radius: 0;
+  }
+  .btn:hover { background: var(--wall-lit); border-color: var(--wall-lit); }
+  .btn[aria-disabled="true"] { background: transparent; color: var(--ink-soft); border-style: dashed; border-color: var(--ink-soft); cursor: default; }
+  .btn-ghost { background: transparent; color: var(--ink); }
+  .btn-ghost:hover { background: var(--ink-faint); border-color: var(--ink); }
+
+  .loader { position: fixed; inset: 0; display: grid; place-items: center; z-index: 1; font-size: 15px; font-weight: 500; color: var(--on-wall); letter-spacing: 0.04em; }
+
+  /* ========== 关于 / 联系：右侧方格纸面板 ========== */
+  .scrim { position: fixed; inset: 0; z-index: 2; background: rgba(15, 25, 90, 0.18); opacity: 0; pointer-events: none; transition: opacity .4s ease; }
+  .is-sheet .scrim { opacity: 1; pointer-events: auto; cursor: pointer; }
+  .sheet {
+    position: fixed; z-index: 3; top: 0; right: 0; bottom: 0;
+    width: min(760px, 62vw); box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain;
+    background-color: var(--paper);
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 24px 24px;
+    box-shadow: -12px 0 32px rgba(0, 0, 0, 0.16);
+    transform: translateX(104%); visibility: hidden;
+    transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear .55s;
+  }
+  .sheet.is-active { transform: none; visibility: visible; transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s; }
+  .sheet-inner {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 96px); padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 56px);
+    padding-left: clamp(24px, 5vw, 64px); padding-right: max(clamp(24px, 5vw, 64px), env(safe-area-inset-right, 0px));
+    display: grid; gap: 56px; max-width: 640px;
+  }
+  /* 面板打开时，盖在面板上的导航改成深色 */
+  .is-sheet .nav { color: var(--ink); }
+  .band { display: none; }
+
+  .eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--wall-lit); }
+  .sheet h2 { margin: 10px 0 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 900; line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
+  .sheet p { margin: 0; font-size: 15px; line-height: 1.85; max-width: 36em; }
+  .muted { color: var(--ink-soft); }
+  .ph { background: rgba(58, 91, 255, 0.06); border-bottom: 1px dashed rgba(44, 70, 196, 0.45); padding: 0 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; } /* 占位文字标记 */
+
+  .intro { display: grid; grid-template-columns: minmax(0, 1fr) 168px; gap: 32px; align-items: end; }
+  .intro-text { display: grid; gap: 18px; min-width: 0; }
+  .portrait {
+    aspect-ratio: 4 / 5; max-width: 100%; display: grid; place-items: center; text-align: center;
+    background: repeating-linear-gradient(135deg, rgba(44,70,196,0.08) 0 10px, transparent 10px 20px), #e7e6df;
+    border: 1px solid var(--ink-faint); font-size: 12px; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  .block { display: grid; gap: 14px; }
+  .block-title { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; padding-bottom: 10px; border-bottom: 1.5px solid var(--ink); display: flex; justify-content: space-between; }
+  .block-title span { font-weight: 400; color: var(--ink-soft); letter-spacing: 0; }
+
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .rows li { display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 16px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid var(--ink-faint); font-size: 14px; }
+  .rows .when { white-space: nowrap; color: var(--ink-soft); font-family: var(--font-mono); font-variant-numeric: tabular-nums slashed-zero; font-size: 12px; }
+  .rows .what { font-weight: 500; min-width: 0; }
+  .rows .what small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 13px; margin-top: 2px; }
+  .rows .tag { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .chips li { font-size: 13px; padding: 6px 12px; border: 1px solid var(--ink-faint); background: var(--paper); }
+
+  .clients { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ink-faint); border-left: 1px solid var(--ink-faint); }
+  .clients li { aspect-ratio: 2 / 1; display: grid; place-items: center; font-size: 12px; font-weight: 500; color: var(--ink-soft); border-right: 1px solid var(--ink-faint); border-bottom: 1px solid var(--ink-faint); background: rgba(255,255,255,0.4); }
+
+  .next { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 0; border-top: 1.5px solid var(--ink); text-decoration: none; font-size: 18px; font-weight: 700; }
+  .next span { font-size: 13px; font-weight: 400; color: var(--ink-soft); }
+  .next:hover { color: var(--wall-lit); }
+
+  /* 联系页 */
+  .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; padding: 7px 12px; background: rgba(31, 138, 91, 0.1); color: var(--ok); width: fit-content; }
+  .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 rgba(31,138,91,0.5); animation: pulse 2s infinite; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 7px rgba(31,138,91,0); } 100% { box-shadow: 0 0 0 0 rgba(31,138,91,0); } }
+
+  .mail { display: grid; gap: 12px; padding: 24px; background: var(--wall-lit); color: var(--on-wall); }
+  .mail-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.055em; color: var(--on-wall-soft); }
+  .mail-addr { font-size: clamp(22px, 3vw, 34px); font-weight: 700; letter-spacing: -0.01em; user-select: all; overflow-wrap: anywhere; }
+  .mail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mail .btn { background: var(--on-wall); color: var(--wall-lit); border-color: var(--on-wall); }
+  .mail .btn:hover { background: transparent; color: var(--on-wall); }
+  .mail .btn-ghost { background: transparent; color: var(--on-wall); border-color: var(--on-wall-soft); }
+  .mail .btn-ghost:hover { background: rgba(255,255,255,0.12); }
+
+  .links li { grid-template-columns: 112px minmax(0, 1fr) auto; }
+  .links a { text-decoration: none; }
+  .links a:hover { color: var(--wall-lit); }
+  .arrow { color: var(--ink-soft); font-size: 13px; }
+
+  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--ink-faint); border: 1px solid var(--ink-faint); }
+  .facts div { background: var(--paper); padding: 16px; display: grid; gap: 6px; min-width: 0; }
+  .facts dt { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+  .facts dd { margin: 0; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums slashed-zero; }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: s; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--ink-faint); font-size: 14px; line-height: 1.7; }
+  .steps li::before { content: counter(s, decimal-leading-zero); font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--wall-lit); font-variant-numeric: tabular-nums slashed-zero; }
+  .steps b { font-weight: 700; }
+
+  @media (max-width: 860px) {
+    .sheet { width: 100vw; box-shadow: none; }
+    /* 手机上面板滚动时，给顶部名字和导航垫一条纸色底 */
+    .band { display: block; position: fixed; z-index: 4; top: 0; left: 0; right: 0; height: calc(env(safe-area-inset-top, 0px) + 84px); background: var(--paper); border-bottom: 1px solid var(--ink-faint); opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+    .is-sheet .band { opacity: 1; }
+    .is-sheet .id { color: var(--ink); }
+    .is-sheet .id-role { color: var(--ink-soft); }
+    .sheet-inner { padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); padding-top: calc(env(safe-area-inset-top, 0px) + 100px); gap: 44px; }
+  }
+  @media (max-width: 560px) {
+    .nav { gap: 16px; font-size: 13px; }
+    .id-role { font-size: 11px; }
+    .tally strong { font-size: 26px; }
+    .lede { max-width: calc(100vw - 120px); }
+    .lede-hint { font-size: 11px; }
+    .card { grid-template-columns: 1fr; }
+    .card-actions .btn { flex: 1; text-align: center; }
+    .intro { grid-template-columns: 1fr; }
+    .portrait { width: 120px; }
+    .rows li, .links li { grid-template-columns: 96px minmax(0, 1fr); gap: 12px; }
+    .rows .when { font-size: 12px; }
+    .rows .tag, .arrow { display: none; }
+    .clients { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .facts { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .status::before { animation: none; }
+    .lede, .tally, .sheet, .scrim { transition: none; }
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+    "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/",
+    "cannon-es": "https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="app" aria-label="可以点击和拖动的纸团，每个纸团是一个项目"></div>
+  <div class="loader" id="loader">正在揉纸团…</div>
+
+  <header class="hud id">
+    <h1 class="id-name"><a href="#work">Songyue Zhao</a></h1>
+    <span class="id-role">Brand / Visual / Digital</span>
+  </header>
+
+  <nav class="hud nav" aria-label="主导航">
+    <a href="#work" data-route="work" aria-current="page">作品</a>
+    <a href="#about" data-route="about">关于</a>
+    <a href="#contact" data-route="contact">联系</a>
+  </nav>
+
+  <div class="hud lede">
+    <p class="lede-line">展开一些想法。</p>
+    <div class="lede-hint">
+      <span>点击 → 展开</span>
+      <span>拖动 → 捡起来扔</span>
+      <span><kbd>Esc</kbd> → 揉回去</span>
+    </div>
+  </div>
+
+  <div class="hud tally" aria-live="polite">
+    <span>已打开</span>
+    <strong><span id="seen">00</span>/<span id="count">00</span></strong>
+    <span>2023 — 2026</span>
+  </div>
+
+  <section class="card" id="card" hidden aria-live="polite">
+    <div class="card-text">
+      <span class="card-no" id="card-no">No.01</span>
+      <h2 class="card-title" id="card-title">项目标题</h2>
+      <span class="card-meta" id="card-meta">分类 · 年份</span>
+    </div>
+    <div class="card-actions">
+      <a class="btn" id="card-link" target="_blank" rel="noopener">查看项目 →</a>
+      <button class="btn btn-ghost" id="card-close" type="button">揉回去 ✕</button>
+    </div>
+  </section>
+
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+  <div class="band" aria-hidden="true"></div>
+
+  <!-- ==================== 关于 ==================== -->
+  <article class="sheet" id="about" aria-labelledby="about-title" tabindex="-1">
+    <div class="sheet-inner">
+      <section class="intro">
+        <div class="intro-text">
+          <div>
+            <div class="eyebrow">About · 关于</div>
+            <h2 id="about-title">你好，我是<span class="ph">Songyue Zhao</span>。</h2>
+          </div>
+          <p><span class="ph">一段 2–3 句的自我介绍：你是做什么的、做了多少年、关注什么问题。比如：独立设计师与前端开发者，过去 6 年为品牌和科技公司做网站、交互和视觉系统。</span></p>
+          <p class="muted"><span class="ph">第二段可以写工作方式或个人兴趣：喜欢把设计直接做成能跑的代码，也喜欢在纸上先画很多草图。</span></p>
+        </div>
+        <div class="portrait" role="img" aria-label="头像占位">头像占位<br />4 : 5</div>
+      </section>
+
+      <section class="block" aria-labelledby="exp-title">
+        <h3 class="block-title" id="exp-title">经历 <span>Experience</span></h3>
+        <ul class="rows">
+          <li><span class="when">2024 — 至今</span><span class="what">独立设计师 / 开发者<small>自由职业，承接品牌与网站项目</small></span><span class="tag">城市</span></li>
+          <li><span class="when">2021 — 2024</span><span class="what">高级交互设计师<small>公司名称 · 负责的产品或团队</small></span><span class="tag">城市</span></li>
+          <li><span class="when">2019 — 2021</span><span class="what">视觉设计师<small>公司名称 · 负责的产品或团队</small></span><span class="tag">城市</span></li>
+          <li><span class="when">2015 — 2019</span><span class="what">学校名称<small>专业 · 学位</small></span><span class="tag">城市</span></li>
+        </ul>
+      </section>
+
+      <section class="block" aria-labelledby="skill-title">
+        <h3 class="block-title" id="skill-title">擅长 <span>Capabilities</span></h3>
+        <ul class="chips">
+          <li>品牌视觉</li><li>网站设计</li><li>交互动效</li><li>设计系统</li>
+          <li>WebGL / Three.js</li><li>前端开发</li><li>数据可视化</li><li>插画</li>
+        </ul>
+      </section>
+
+      <section class="block" aria-labelledby="client-title">
+        <h3 class="block-title" id="client-title">合作过的客户 <span>Clients</span></h3>
+        <ul class="clients">
+          <li>客户 A</li><li>客户 B</li><li>客户 C</li><li>客户 D</li>
+          <li>客户 E</li><li>客户 F</li><li>客户 G</li><li>客户 H</li>
+        </ul>
+      </section>
+
+      <section class="block" aria-labelledby="award-title">
+        <h3 class="block-title" id="award-title">荣誉与分享 <span>Recognition</span></h3>
+        <ul class="rows">
+          <li><span class="when">2026</span><span class="what">奖项或评选名称<small>获奖项目名称</small></span><span class="tag">获奖</span></li>
+          <li><span class="when">2025</span><span class="what">演讲或分享的活动名<small>分享主题</small></span><span class="tag">演讲</span></li>
+          <li><span class="when">2024</span><span class="what">媒体或网站名称<small>被报道或收录的项目</small></span><span class="tag">报道</span></li>
+        </ul>
+      </section>
+
+      <a class="next" href="#contact">有项目想聊？<span>去联系页 →</span></a>
+    </div>
+  </article>
+
+  <!-- ==================== 联系 ==================== -->
+  <article class="sheet" id="contact" aria-labelledby="contact-title" tabindex="-1">
+    <div class="sheet-inner">
+      <section class="intro-text">
+        <div>
+          <div class="eyebrow">Contact · 联系</div>
+          <h2 id="contact-title">一起做点什么吧。</h2>
+        </div>
+        <span class="status">目前可以接新项目 · <span class="ph">2027 年 1 月起</span></span>
+        <p>项目合作、全职机会，或者只是想聊聊，都可以写邮件给我。一般会在两个工作日内回复。</p>
+      </section>
+
+      <section class="mail" aria-label="邮箱">
+        <span class="mail-label">EMAIL</span>
+        <span class="mail-addr" id="mail-addr">hello@yourname.com</span>
+        <div class="mail-actions">
+          <button class="btn" id="copy-mail" type="button">复制邮箱</button>
+          <a class="btn btn-ghost" id="mail-link" href="mailto:hello@yourname.com">用邮件客户端打开</a>
+        </div>
+      </section>
+
+      <dl class="facts">
+        <div><dt>所在地</dt><dd><span class="ph">城市，国家</span></dd></div>
+        <div><dt>我这边现在是</dt><dd id="local-time">--:--</dd></div>
+        <div><dt>通常回复时间</dt><dd>2 个工作日内</dd></div>
+      </dl>
+
+      <section class="block" aria-labelledby="social-title">
+        <h3 class="block-title" id="social-title">其他地方找到我 <span>Elsewhere</span></h3>
+        <ul class="rows links">
+          <li><span class="when">微信</span><span class="what">your-wechat-id<small>添加时请备注来意</small></span><span class="arrow"></span></li>
+          <li><span class="when">小红书</span><a class="what" href="#" target="_blank" rel="noopener">@你的账号</a><span class="arrow">↗</span></li>
+          <li><span class="when">Behance</span><a class="what" href="#" target="_blank" rel="noopener">behance.net/yourname</a><span class="arrow">↗</span></li>
+          <li><span class="when">Dribbble</span><a class="what" href="#" target="_blank" rel="noopener">dribbble.com/yourname</a><span class="arrow">↗</span></li>
+          <li><span class="when">GitHub</span><a class="what" href="#" target="_blank" rel="noopener">github.com/yourname</a><span class="arrow">↗</span></li>
+          <li><span class="when">简历</span><a class="what" href="#" target="_blank" rel="noopener">下载 PDF 简历</a><span class="arrow">↗</span></li>
+        </ul>
+      </section>
+
+      <section class="block" aria-labelledby="brief-title">
+        <h3 class="block-title" id="brief-title">发邮件时可以带上 <span>Brief</span></h3>
+        <ol class="steps">
+          <li><span><b>你是谁</b>：公司或团队，以及你负责的部分。</span></li>
+          <li><span><b>要做什么</b>：网站、品牌、动效还是其他，有参考链接更好。</span></li>
+          <li><span><b>时间和预算</b>：期望上线时间，以及大致的预算范围。</span></li>
+        </ol>
+      </section>
+
+      <a class="next" href="#work">回到作品<span>看看纸团 →</span></a>
+    </div>
+  </article>
+
+  <script src="./src/projects.js"></script>
+  <script src="./src/pages.js"></script>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
