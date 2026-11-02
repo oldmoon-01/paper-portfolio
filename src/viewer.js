@@ -45,7 +45,10 @@ window.ProjectViewer = (function () {
             ${d.en ? `<div lang="en">${d.en.map(para).join("")}</div>` : ""}
             ${d.zh ? `<div lang="zh-CN">${d.zh.map(para).join("")}</div>` : ""}
           </div>
-          <button class="vi-start" type="button" data-go="1">向左滑动看作品 →</button>
+          <div class="vi-actions">
+            <button class="vi-start" type="button" data-go="1">${project.gallery.length > 1 ? "向左滑动看作品 →" : "查看作品 →"}</button>
+            ${project.site ? `<a class="vi-site" href="${esc(project.site)}" target="_blank" rel="noopener">访问网站 ${esc(project.site.replace(/^https?:\/\//, ""))} ↗</a>` : ""}
+          </div>
         </div>
       </section>`;
     const imgs = project.gallery.map((g, k) => `

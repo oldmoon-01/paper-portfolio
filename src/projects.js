@@ -1,9 +1,10 @@
 // ==================================================
 // 作品集项目数据 —— 每一条 = 一个纸团
 // 改这里就行：标题、分类、年份、简介、链接、封面图
-//   image: 封面图路径（建议 1200×630，可留空，会自动画一个占位封面）
+//   image: 封面图路径（有 gallery 时自动用图集第一张，等比完整显示；都没有则画占位封面）
 //   link:  项目详情页 / 外链（留空则按钮显示“即将上线”）
 //   color: 占位封面的主色
+//   site: 线上网站地址（介绍页会出现“访问网站”按钮，可省略）
 //   brief: 项目背景（如 "D&AD Brief · 团队项目"，可省略）
 //   gallery: 展开后滑动浏览的图片 [{ src, caption }]；description: { en: [段落], zh: [段落] }（"## 标题" 是小标题）
 // ==================================================
@@ -15,7 +16,6 @@ window.PROJECTS = [
     year: "",
     summary: "帮助年轻人识别社交媒体上的假新闻，包含 Instagram 账号与网站设计。",
     link: "",
-    image: "assets/projects/stay-wise/cover.webp",
     color: "#111214",
     deliverables: ["Instagram 账号", "网站设计", "字体与视觉系统"],
     // 展开后滑动浏览的图片（按顺序）
@@ -44,7 +44,6 @@ window.PROJECTS = [
     year: "",
     summary: "让孩子在玩耍中提高创造力、激发感官能力的教育套装，鼓励他们尊重和保护自然。",
     link: "",
-    image: "assets/projects/sunnyup/cover.webp",
     color: "#9bd31c",
     deliverables: ["包装设计", "手册与活动卡", "插画与字体"],
     gallery: [
@@ -71,7 +70,6 @@ window.PROJECTS = [
     year: "",
     summary: "把疫情封控期间的日常、情绪与想象记录在手提袋上，分发物资时赠予邻居。",
     link: "",
-    image: "assets/projects/consolation-reticule/cover.webp",
     color: "#3b5bd6",
     deliverables: ["手提袋设计", "书籍设计", "插画与图形语言"],
     gallery: [
@@ -98,7 +96,6 @@ window.PROJECTS = [
     year: "",
     summary: "与观众共同完成的项目：在药盒里写下让你不适的症状，和能治愈你的专属“药方”。",
     link: "",
-    image: "assets/projects/real-symptom/cover.webp",
     color: "#ff6fcf",
     deliverables: ["展览设计", "药盒包装", "手册设计"],
     gallery: [
@@ -130,7 +127,6 @@ window.PROJECTS = [
     year: "",
     summary: "为音乐节打造的视觉形象，把秋季元素与音乐的激情和能量融合在一起。",
     link: "",
-    image: "assets/projects/autumn-rush/cover.webp",
     color: "#ff4fa3",
     deliverables: ["主视觉", "海报与邀请邮件", "门票与周边"],
     gallery: [
@@ -149,11 +145,142 @@ window.PROJECTS = [
       ],
     },
   },
-  { title: "项目标题 06", en: "PROJECT SIX",    category: "前端开发",   year: 2024, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#0c7c8c" },
-  { title: "项目标题 07", en: "PROJECT SEVEN",  category: "包装设计",   year: 2024, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#c2185b" },
-  { title: "项目标题 08", en: "PROJECT EIGHT",  category: "数据可视化", year: 2024, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#3d5a80" },
-  { title: "项目标题 09", en: "PROJECT NINE",   category: "3D / WebGL", year: 2023, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#5c6b2e" },
-  { title: "项目标题 10", en: "PROJECT TEN",    category: "字体设计",   year: 2023, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#8d5524" },
-  { title: "项目标题 11", en: "PROJECT ELEVEN", category: "展览视觉",   year: 2022, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#264653" },
+  {
+    title: "SEAFRONT",
+    en: "临海露营",
+    category: "品牌设计",
+    year: "",
+    summary: "把豪华露营与艺术活动结合，为城市年轻人重新定义露营品牌。",
+    link: "",
+    color: "#2f5bea",
+    deliverables: ["品牌识别", "社交媒体", "活动手册", "周边与礼盒"],
+    gallery: [
+      { src: "assets/projects/seafront/01.webp", caption: "社交媒体 · Social media" },
+      { src: "assets/projects/seafront/02.webp", caption: "活动手册设计 · Workshop brochures" },
+      { src: "assets/projects/seafront/03.webp", caption: "衍生品与触点 · Touchpoints" },
+      { src: "assets/projects/seafront/04.webp", caption: "露营礼盒设计 · Camping gift box" },
+    ],
+    description: {
+      en: [
+        "In the context of the global pandemic caused by the Coronavirus, the Chinese camping industry experienced a notable decline in market demand. However, with the return of interest in healthy lifestyles and outdoor experiences after the pandemic, the traditional camping model is no longer able to meet the needs of modern young people. These individuals, especially urban white-collar workers under \u201curban pressure,\u201d seek more meaningful experiences that provide aesthetic and emotional resonance.",
+        "In response, SEAFRONT redefines the camping brand in an innovative way that combines glamping and artistic activities. Through art workshops and outdoor installations, this project aims to create a space where nature and creativity converge, offering young people a way to relax and find fulfilment amidst natural beauty.",
+      ],
+      zh: [
+        "在新冠肺炎疫情全球大流行的背景下，中国露营行业市场需求明显下降。然而，随着疫情后人们对健康生活方式和户外体验的兴趣回归，传统的露营模式已经无法满足现代年轻人的需求。这些人，尤其是在\u201c城市压力\u201d下的城市白领，寻求更有意义的体验，提供审美和情感上的共鸣。",
+        "作为回应，临海露营以一种创新的方式重新定义了露营品牌，将豪华露营与艺术活动相结合。通过艺术工作坊和户外装置，该项目旨在创造一个自然和创造力融合的空间，为年轻人提供一种放松和在自然美景中找到满足的方式。",
+      ],
+    },
+  },
+  {
+    title: "Abaka AI",
+    en: "品牌视觉系统拓展",
+    category: "Commercial Work",
+    year: "",
+    summary: "主导 Abaka AI 品牌视觉系统的拓展，覆盖社交媒体、国际展会与品牌周边。",
+    link: "",
+    color: "#ff5a1f",
+    deliverables: ["社交媒体视觉", "海报、折页与易拉宝", "展位设计", "品牌周边"],
+    gallery: [
+      { src: "assets/projects/abaka-ai/01.webp", caption: "商业作品集合：折页、易拉宝与海报 · Commercial works collection" },
+      { src: "assets/projects/abaka-ai/02.webp", caption: "品牌周边：T 恤、名片与贴纸 · Merchandise" },
+      { src: "assets/projects/abaka-ai/03.webp", caption: "活动现场物料 · Event materials" },
+      { src: "assets/projects/abaka-ai/04.webp", caption: "CVPR 2026 展位设计 · Exhibition booth" },
+    ],
+    description: {
+      en: [
+        "Led the multi-dimensional expansion of Abaka AI's visual identity system, developing a cohesive range of digital and physical brand assets. Created social media visuals for LinkedIn, Facebook, and X, alongside promotional materials, exhibition graphics, and branded merchandise for international events. Established a consistent yet adaptable visual language to strengthen brand recognition and maintain a unified presence across global touchpoints.",
+      ],
+      zh: [
+        "主导 Abaka AI 品牌视觉识别系统的多维度拓展与应用，围绕品牌一致性与国际化传播需求，构建覆盖线上与线下的视觉物料体系。为 LinkedIn、Facebook、X 等社交媒体平台设计系列宣传素材，并延伸至国际展会、行业活动及品牌周边，包括宣传海报、折页、易拉宝、展位视觉及创意物料等。通过统一的视觉语言与灵活的场景化设计，强化品牌在全球不同传播渠道中的识别度与专业形象。",
+      ],
+    },
+  },
+  {
+    title: "2077AI",
+    en: "品牌视觉系统拓展",
+    category: "Commercial Work",
+    year: "",
+    summary: "以电光蓝、未来主义排版和等轴测图形，拓展 2077AI 及 2077 Ventures 的品牌视觉。",
+    link: "",
+    color: "#2a2cff",
+    deliverables: ["社交媒体与成果海报", "宣传折页与易拉宝", "活动物料", "2077 Ventures 子品牌"],
+    gallery: [
+      { src: "assets/projects/2077ai/01.webp", caption: "易拉宝、宣传折页与成果海报 · Roll-up, flyers & achievement posters" },
+      { src: "assets/projects/2077ai/02.webp", caption: "2077 Ventures 发布活动 · Launch event" },
+    ],
+    description: {
+      en: [
+        "Expanded 2077AI's visual identity across digital and physical touchpoints, using its signature electric blue, futuristic typography, geometric forms, and isometric graphics to establish a distinctive technology-driven aesthetic. Designed social media campaigns, research achievement visuals, promotional materials, and international event assets, while extending the visual language to the 2077 Ventures sub-brand. Translated complex AI research into clear, engaging visual communications through structured information hierarchy and a cohesive design system, strengthening brand recognition across the global AI ecosystem.",
+      ],
+      zh: [
+        "负责 2077AI 品牌视觉系统的拓展与多场景应用，以标志性的电光蓝为视觉核心，结合未来主义排版、几何图形与等轴测设计语言，构建兼具科技感与辨识度的品牌形象。设计涵盖社交媒体宣传、技术研究成果展示、品牌推广物料及国际线下活动，并延伸至 2077 Ventures 子品牌的视觉应用。通过系统化的信息层级与统一的视觉语言，将复杂的 AI 技术内容转化为清晰、专业且具有视觉冲击力的传播内容，强化品牌在全球 AI 生态中的识别度与影响力。",
+      ],
+    },
+  },
+  {
+    title: "REX",
+    en: "REX Dollars",
+    category: "Commercial Work",
+    year: "",
+    summary: "以美元纸币为灵感的 REX 创意推广物料，用于 CES 2026 线下推广。",
+    link: "",
+    color: "#4d6b4f",
+    deliverables: ["创意推广物料", "纸币视觉设计", "互动二维码"],
+    gallery: [
+      { src: "assets/projects/rex/01.webp", caption: "REX Dollars · CES 2026" },
+    ],
+    description: {
+      en: [
+        "Designed REX Dollars, a currency-inspired promotional concept for REX (RemoExperts), translating the brand's core values of opportunity, reward, and growth into a distinctive physical experience. Reinterpreted traditional banknote graphics by integrating brand messaging, incentive-driven visuals, and interactive QR codes to create a memorable and engaging promotional asset. The design was featured at CES 2026, strengthening brand visibility, recognition, and audience engagement through a playful, unconventional approach.",
+      ],
+      zh: [
+        "围绕 REX（RemoExperts）品牌\u201c价值、回报与机遇\u201d的核心理念，设计以美元纸币为灵感的创意推广物料 REX Dollars。通过对传统货币视觉符号的重新解构，将品牌信息、激励机制与互动二维码融入纸币设计，打造兼具趣味性、辨识度与传播价值的品牌载体。该物料最终应用于 CES 2026 国际科技展会的线下推广，以具有视觉冲击力的创意形式吸引观众关注，提升品牌记忆度与现场互动体验。",
+      ],
+    },
+  },
+  {
+    title: "整数智能",
+    en: "MolarData Intelligence",
+    category: "Commercial Work",
+    year: "",
+    summary: "整数智能品牌视觉在行业展会、品牌推广、校园招聘与企业宣传中的拓展应用。",
+    link: "",
+    color: "#1e1a4a",
+    deliverables: ["展会主视觉", "宣讲会物料", "宣传折页", "企业宣传"],
+    gallery: [
+      { src: "assets/projects/molardata/01.webp", caption: "校园招聘与商务活动物料 · Business event materials" },
+      { src: "assets/projects/molardata/02.webp", caption: "全球数字贸易博览会主视觉 · GDTE backdrop" },
+    ],
+    description: {
+      en: [
+        "Developed and extended MolarData Intelligence's brand visuals across diverse commercial applications, including industry exhibitions, marketing campaigns, campus recruitment, and corporate communications. Combined technology-inspired aesthetics, dynamic gradient graphics, and structured information hierarchies to translate complex AI data services and model evaluation capabilities into clear, engaging visual narratives. Ensured a cohesive brand presence across digital and physical touchpoints, reinforcing the company's identity as a professional and innovative AI technology provider.",
+      ],
+      zh: [
+        "负责整数智能品牌视觉在多元商业场景中的拓展与应用，围绕企业在 AI 数据服务与模型评测领域的专业定位，设计涵盖行业展会、品牌推广、校园招聘及企业宣传的系列视觉物料。以科技感视觉语言、动态渐变图形与清晰的信息层级，将复杂的技术服务与品牌价值转化为直观且具有吸引力的视觉表达。通过线上线下多渠道的视觉整合，强化品牌识别度与传播一致性，塑造专业、创新的 AI 科技企业形象。",
+      ],
+    },
+  },
+  {
+    title: "ZODA",
+    en: "品牌视觉与社区官网",
+    category: "Commercial Work",
+    year: "",
+    summary: "ZODA 品牌视觉体系与社区官网升级：深色科技美学、动态地球与模块化布局。",
+    link: "",
+    site: "https://zoda.zone",
+    color: "#2a2550",
+    deliverables: ["品牌视觉规范", "社区官网设计", "动态交互"],
+    gallery: [
+      { src: "assets/projects/zoda/01.webp", caption: "ZODA 社区官网 · Community website" },
+    ],
+    description: {
+      en: [
+        "Led the development of ZODA's visual identity system and the ongoing redesign of its community website, centered on open data, AI infrastructure, and a global network of experts. Combined a dark, technology-driven aesthetic with an interactive 3D globe, immersive visual elements, and modular content layouts to create an engaging digital experience. Through brand guideline development, interface refinement, and motion-driven interactions, translated complex technical concepts into clear and compelling digital narratives, strengthening brand recognition, usability, and visual consistency.",
+      ],
+      zh: [
+        "负责 ZODA 品牌视觉体系的搭建与官网的优化升级，围绕开放数据、AI 基础设施与全球专家社区的品牌定位，构建兼具未来感与专业性的数字视觉体验。以深色科技美学为基础，结合动态地球、三维视觉元素与模块化信息布局，打造具有沉浸感和探索性的交互界面。通过品牌视觉规范的梳理、网页结构优化及动态交互设计，将复杂的技术内容转化为清晰、直观且富有吸引力的数字叙事，提升品牌识别度、用户体验与整体视觉一致性。",
+      ],
+    },
+  },
   { title: "项目标题 12", en: "PROJECT TWELVE", category: "实验项目",   year: 2021, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#b5179e" },
 ];

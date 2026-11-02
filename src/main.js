@@ -26,6 +26,7 @@ const ui = {
   cardMeta: document.getElementById("card-meta"),
   cardLink: document.getElementById("card-link"),
   cardClose: document.getElementById("card-close"),
+  cardNext: document.getElementById("card-next"),
 };
 
 const scene = new THREE.Scene();
@@ -152,7 +153,7 @@ const SANS = '"Space Grotesk", "Noto Sans SC", "Source Han Sans SC", "PingFang S
 const MONO = '"IBM Plex Mono", "Noto Sans SC", ui-monospace, monospace';
 const INK = "#1b1d22";
 const ACCENT = "#2c46c4";
-const IMG = { x: 113, y: 430, w: 798, h: 449 };
+const IMG = { x: 113, y: 430, w: 798, h: 449 }; // y 会随标题行数调整
 const paperStates = [];
 
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -181,38 +182,40 @@ function drawPaper(state) {
   ctx.textAlign = "left";
 
   // 标题（中文）+ 英文副标题
-  drawTitle(ctx, project.title);
+  // 编号基线在 y=132；标题顶部与编号之间固定留出 96px，长标题折行时整体往下排
+  const titleBottom = drawTitle(ctx, project.title, 132 + 96);
+  const subBase = titleBottom + 76;
   ctx.globalAlpha = 0.7;
-  fitText(ctx, project.en || "", SANS, 44, 28, IMG.w, IMG.x, 360, 500);
+  fitText(ctx, project.en || "", SANS, 44, 28, IMG.w, IMG.x, subBase, 500);
   ctx.globalAlpha = 1;
+  IMG.y = subBase + 56; // 封面紧跟副标题
+  let coverBottom = IMG.y + IMG.h;
 
-  // 封面
+  // 封面：图集第一张，等比完整放入（不裁切、不放大），与正文左对齐
   if (state.image && state.image.complete && state.image.naturalWidth) {
     const im = state.image;
-    const s = Math.max(IMG.w / im.naturalWidth, IMG.h / im.naturalHeight);
-    ctx.save();
-    ctx.beginPath(); ctx.rect(IMG.x, IMG.y, IMG.w, IMG.h); ctx.clip();
-    ctx.drawImage(im, IMG.x + (IMG.w - im.naturalWidth * s) / 2, IMG.y + (IMG.h - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s);
-    ctx.restore();
+    const s = Math.min(IMG.w / im.naturalWidth, IMG.h / im.naturalHeight, 1);
+    const w = im.naturalWidth * s, h = im.naturalHeight * s;
+    const x = IMG.x, y = IMG.y;
+    coverBottom = y + h;
+    ctx.drawImage(im, x, y, w, h);
+    ctx.strokeStyle = "#3a3a38";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x, y, w, h);
   } else {
     drawPlaceholderCover(ctx, project, index);
+    ctx.strokeStyle = "#3a3a38";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(IMG.x, IMG.y, IMG.w, IMG.h);
   }
-  ctx.strokeStyle = "#3a3a38";
-  ctx.lineWidth = 3;
-  ctx.strokeRect(IMG.x, IMG.y, IMG.w, IMG.h);
 
   // 分类 + 简介
   ctx.fillStyle = INK;
   ctx.font = `700 50px ${SANS}`;
-  ctx.fillText(`# ${project.category || ""}`, IMG.x, IMG.y + IMG.h + 100);
+  ctx.fillText(`# ${project.category || ""}`, IMG.x, coverBottom + 100);
   ctx.font = `400 42px ${SANS}`;
-  wrapText(ctx, project.summary || "", IMG.x, IMG.y + IMG.h + 175, IMG.w, 64, 3);
+  wrapText(ctx, project.summary || "", IMG.x, coverBottom + 175, IMG.w, 64, 3);
 
-  // 角落提示
-  ctx.font = `500 36px ${MONO}`;
-  ctx.textAlign = "right";
-  ctx.fillText(project.gallery ? "点击滑动浏览 →" : project.link ? "查看详情 →" : "即将上线", IMG.x + IMG.w, TEX_H - 70);
-  ctx.textAlign = "left";
 
   state.texture.needsUpdate = true;
 }
@@ -250,16 +253,19 @@ function drawPlaceholderCover(ctx, project, index) {
 }
 
 // 标题：先尝试单行缩小，放不下就按单词折成两行
-function drawTitle(ctx, title) {
-  const W = IMG.w, x = IMG.x;
-  let size = 112;
+// 标题：从 top 开始往下排；单行放不下就按单词折两行。返回最后一行的基线 y
+function drawTitle(ctx, title, top) {
+  const W = IMG.w, x = IMG.x, CAP = 0.74; // 大写字母高度约为字号的 0.74
   const font = (n) => `700 ${n}px ${SANS}`;
+  let size = 112;
   ctx.font = font(size);
   while (ctx.measureText(title).width > W && size > 72) ctx.font = font((size -= 4));
   const words = title.split(" ");
   if (ctx.measureText(title).width <= W || words.length < 2) {
-    fitText(ctx, title, SANS, size, 48, W, x, 280, 700);
-    return;
+    while (ctx.measureText(title).width > W && size > 48) ctx.font = font((size -= 4));
+    const base = top + size * CAP;
+    ctx.fillText(title, x, base);
+    return base;
   }
   let best = null;
   for (let i = 1; i < words.length; i++) {
@@ -267,11 +273,13 @@ function drawTitle(ctx, title) {
     const w = Math.max(ctx.measureText(l1).width, ctx.measureText(l2).width);
     if (!best || w < best.w) best = { l1, l2, w };
   }
-  size = 92;
+  size = 84;
   ctx.font = font(size);
   while (Math.max(ctx.measureText(best.l1).width, ctx.measureText(best.l2).width) > W && size > 44) ctx.font = font((size -= 4));
-  ctx.fillText(best.l1, x, 300 - size * 1.08);
-  ctx.fillText(best.l2, x, 300);
+  const b1 = top + size * CAP, b2 = b1 + size * 1.1;
+  ctx.fillText(best.l1, x, b1);
+  ctx.fillText(best.l2, x, b2);
+  return b2;
 }
 
 function fitText(ctx, text, family, max, min, width, x, y, weight = 400) {
@@ -310,10 +318,11 @@ function getPaperMaterial(index) {
   texture.repeat.set(1, -1);
   const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9, metalness: 0, side: THREE.DoubleSide });
   const state = { project, index, canvas, ctx: canvas.getContext("2d"), texture, material, image: null };
-  if (project.image) {
+  const coverSrc = (project.gallery && project.gallery[0] && project.gallery[0].src) || project.image;
+  if (coverSrc) {
     state.image = new Image();
     state.image.onload = () => drawPaper(state);
-    state.image.src = project.image;
+    state.image.src = coverSrc;
   }
   drawPaper(state);
   paperStates[index] = state;
@@ -365,7 +374,8 @@ function setFrame(paper, frameIdx) {
 const OPEN_FRAME = 4;          // 展开时停在第几帧：0 = 完全摊平，稍大一点保留褶皱感
 const OPEN_SCREEN_RATIO = 0.78; // 展开的纸占屏幕高度
 const OPEN_DISTANCE = 1.5;
-const CLOSED_SCALE = 0.82;
+// 纸团（未展开）大小：桌面端（横屏）大一号，手机竖屏保持原大小。加载时按屏幕比例决定
+const CLOSED_SCALE = innerWidth / innerHeight >= 0.9 ? 1.0 : 0.82;
 const OPEN_DURATION = 1.15 / 1.5;
 const DISCARD_DURATION = 1.25 / 1.5;
 const ROLL_LIN = 2.6, ROLL_ANG = 4.5, SETTLE = 0.018;
@@ -537,6 +547,21 @@ function pick(e) {
   const hit = raycaster.intersectObjects(papers.map((p) => p.mesh));
   return hit.length ? papers.find((p) => p.mesh === hit[0].object) : null;
 }
+
+// 切到下一个项目：揉回当前纸团，展开编号顺延的下一个
+function goNext() {
+  if (!active) return;
+  const n = PROJECTS.length;
+  for (let k = 1; k < n; k++) {
+    const idx = (active.index + k) % n;
+    const p = papers.find((q) => q.index === idx);
+    if (p && (p.state === "closed" || p.state === "rolling")) {
+      closeActive();
+      openPaper(p);
+      return;
+    }
+  }
+}
 const grabbable = (p) => p.state === "closed" || p.state === "rolling";
 
 canvas.addEventListener("pointerdown", (e) => {
@@ -672,7 +697,7 @@ function showCard(i) {
   ui.cardLink.onclick = null;
   if (pr.gallery) {
     ui.cardLink.href = "#work";
-    ui.cardLink.textContent = `滑动浏览 ${pr.gallery.length} 张 →`;
+    ui.cardLink.textContent = pr.gallery.length > 1 ? `滑动浏览 ${pr.gallery.length} 张 →` : "查看作品 →";
     ui.cardLink.removeAttribute("aria-disabled");
     ui.cardLink.removeAttribute("target");
     ui.cardLink.onclick = (e) => { e.preventDefault(); openViewer(i); };
@@ -697,11 +722,13 @@ function updateSeen() {
   ui.seen.textContent = pad2(seen.size);
 }
 ui.cardClose.addEventListener("click", closeActive);
+ui.cardNext.addEventListener("click", goNext);
 // 打开“关于 / 联系”面板时，把展开的纸揉回去
 addEventListener("portfolio:route", (e) => { if (e.detail !== "work") closeActive(); });
 addEventListener("keydown", (e) => {
-  if (e.key !== "Escape" || ui.root.classList.contains("is-viewer")) return; // 图集打开时 Esc 只关图集
-  closeActive();
+  if (ui.root.classList.contains("is-viewer")) return; // 图集打开时交给图集处理
+  if (e.key === "Escape") closeActive();
+  else if (e.key === "ArrowRight" && active && active.state === "open") goNext();
 });
 function openViewer(i) {
   if (window.ProjectViewer) window.ProjectViewer.open(i);
@@ -774,3 +801,16 @@ init().catch((err) => {
   console.error(err);
   ui.loader.textContent = "加载失败：" + err.message;
 });
+
+// 调试/外部调用：window.PaperStage.open(0) 展开第 1 个，window.PaperStage.next() 下一个
+window.PaperStage = {
+  open(i) {
+    const p = papers.find((q) => q.index === i);
+    if (!p || !(p.state === "closed" || p.state === "rolling")) return;
+    if (active) closeActive();
+    openPaper(p);
+  },
+  next: goNext,
+  // 导出某张纸的纸面图（调试用）
+  paperImage: (i) => paperStates[i] && paperStates[i].canvas.toDataURL("image/jpeg", 0.8),
+};
