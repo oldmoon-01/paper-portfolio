@@ -9,8 +9,6 @@ import { SSAOPass } from "three/examples/jsm/postprocessing/SSAOPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 
 const PROJECTS = window.PROJECTS || [];
-const isCompactViewport = () => innerWidth <= 760;
-const renderPixelRatio = () => Math.min(devicePixelRatio || 1, isCompactViewport() ? 1 : 1.5);
 
 // ==================================================
 // 场景
@@ -56,7 +54,7 @@ function placeCamera() {
 placeCamera();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(renderPixelRatio());
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.shadowMap.enabled = true;
@@ -86,7 +84,7 @@ scene.add(new THREE.AmbientLight(0xffffff, 1.25));
 const key = new THREE.DirectionalLight(0xffffff, 1.15);
 key.position.set(-2, 2.6, 1.4);
 key.castShadow = true;
-key.shadow.mapSize.set(isCompactViewport() ? 512 : 1024, isCompactViewport() ? 512 : 1024);
+key.shadow.mapSize.set(2048, 2048);
 Object.assign(key.shadow.camera, { left: -4, right: 4, top: 4, bottom: -3, near: 0.1, far: 12 });
 key.shadow.bias = -0.001;
 scene.add(key);
@@ -94,15 +92,11 @@ scene.add(key);
 // SSAO 让褶皱和凹陷更有层次
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-// SSAO 的离屏缓冲在小屏上代价高，移动端保留光影与阴影但跳过这一层细节。
-let ssao = null;
-if (!isCompactViewport()) {
-  ssao = new SSAOPass(scene, camera, innerWidth, innerHeight);
-  ssao.kernelRadius = 0.01;
-  ssao.minDistance = 0.0001;
-  ssao.maxDistance = 0.08;
-  composer.addPass(ssao);
-}
+const ssao = new SSAOPass(scene, camera, innerWidth, innerHeight);
+ssao.kernelRadius = 0.01;
+ssao.minDistance = 0.0001;
+ssao.maxDistance = 0.08;
+composer.addPass(ssao);
 composer.addPass(new OutputPass());
 
 // ==================================================
@@ -153,13 +147,9 @@ async function loadAnimData() {
 // ==================================================
 // 纸面设计：方格纸 + 手写字 + 项目封面
 // ==================================================
-const PAPER_TEXTURE = {
-  thumbnail: { width: 512, height: 700 },
-  detail: { width: 1024, height: 1400 },
-};
-const DESIGN_W = 1024, DESIGN_H = 1400;
-const SANS = '"Space Grotesk", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
-const MONO = '"IBM Plex Mono", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", monospace';
+const TEX_W = 1024, TEX_H = 1400;
+const SANS = '"Space Grotesk", "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif';
+const MONO = '"IBM Plex Mono", "Noto Sans SC", ui-monospace, monospace';
 const INK = "#1b1d22";
 const ACCENT = "#2c46c4";
 const IMG = { x: 113, y: 430, w: 798, h: 449 };
@@ -168,39 +158,37 @@ const paperStates = [];
 const pad2 = (n) => String(n).padStart(2, "0");
 
 function drawPaper(state) {
-  const { ctx, project, index, canvas } = state;
-  ctx.setTransform(canvas.width / DESIGN_W, 0, 0, canvas.height / DESIGN_H, 0, 0);
+  const { ctx, project, index } = state;
   ctx.fillStyle = "#eae8e1";
-  ctx.fillRect(0, 0, DESIGN_W, DESIGN_H);
+  ctx.fillRect(0, 0, TEX_W, TEX_H);
   ctx.strokeStyle = "rgba(44,70,196,0.13)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  for (let x = 32; x <= DESIGN_W; x += 64) { ctx.moveTo(x, 0); ctx.lineTo(x, DESIGN_H); }
-  for (let y = 32; y <= DESIGN_H; y += 64) { ctx.moveTo(0, y); ctx.lineTo(DESIGN_W, y); }
+  for (let x = 32; x <= TEX_W; x += 64) { ctx.moveTo(x, 0); ctx.lineTo(x, TEX_H); }
+  for (let y = 32; y <= TEX_H; y += 64) { ctx.moveTo(0, y); ctx.lineTo(TEX_W, y); }
   ctx.stroke();
 
   ctx.fillStyle = INK;
   ctx.textBaseline = "alphabetic";
   // 编号与年份
-  ctx.font = `700 42px ${MONO}`;
+  ctx.font = `600 44px ${MONO}`;
   ctx.fillStyle = ACCENT;
   ctx.fillText(`No.${pad2(index + 1)}`, IMG.x, 132);
   ctx.fillStyle = INK;
-  ctx.font = `500 42px ${MONO}`;
+  ctx.font = `500 44px ${MONO}`;
   ctx.textAlign = "right";
   ctx.fillText(String(project.year || ""), IMG.x + IMG.w, 132);
   ctx.textAlign = "left";
 
   // 标题（中文）+ 英文副标题
-  fitText(ctx, project.title, SANS, 112, 60, IMG.w, IMG.x, 280, 900);
+  drawTitle(ctx, project.title);
   ctx.globalAlpha = 0.7;
   fitText(ctx, project.en || "", SANS, 44, 28, IMG.w, IMG.x, 360, 500);
   ctx.globalAlpha = 1;
 
   // 封面
-  const image = state.quality === "detail" ? state.fullImage || state.thumbnailImage : state.thumbnailImage;
-  if (image && image.complete && image.naturalWidth) {
-    const im = image;
+  if (state.image && state.image.complete && state.image.naturalWidth) {
+    const im = state.image;
     const s = Math.max(IMG.w / im.naturalWidth, IMG.h / im.naturalHeight);
     ctx.save();
     ctx.beginPath(); ctx.rect(IMG.x, IMG.y, IMG.w, IMG.h); ctx.clip();
@@ -221,9 +209,9 @@ function drawPaper(state) {
   wrapText(ctx, project.summary || "", IMG.x, IMG.y + IMG.h + 175, IMG.w, 64, 3);
 
   // 角落提示
-  ctx.font = `500 40px ${SANS}`;
+  ctx.font = `500 36px ${MONO}`;
   ctx.textAlign = "right";
-  ctx.fillText(project.link ? "查看详情 →" : "即将上线", IMG.x + IMG.w, DESIGN_H - 70);
+  ctx.fillText(project.gallery ? "点击滑动浏览 →" : project.link ? "查看详情 →" : "即将上线", IMG.x + IMG.w, TEX_H - 70);
   ctx.textAlign = "left";
 
   state.texture.needsUpdate = true;
@@ -256,9 +244,34 @@ function drawPlaceholderCover(ctx, project, index) {
   ctx.restore();
   ctx.fillStyle = "rgba(255,255,255,0.92)";
   ctx.font = `700 52px ${SANS}`;
-  ctx.fillText("项目缩略图占位", x + 40, y + h - 96);
-  ctx.font = `400 36px ${SANS}`;
-  ctx.fillText("640 × 336 preview", x + 40, y + h - 40);
+  ctx.fillText("封面图占位", x + 40, y + h - 96);
+  ctx.font = `400 34px ${MONO}`;
+  ctx.fillText("1200 × 630", x + 40, y + h - 40);
+}
+
+// 标题：先尝试单行缩小，放不下就按单词折成两行
+function drawTitle(ctx, title) {
+  const W = IMG.w, x = IMG.x;
+  let size = 112;
+  const font = (n) => `700 ${n}px ${SANS}`;
+  ctx.font = font(size);
+  while (ctx.measureText(title).width > W && size > 72) ctx.font = font((size -= 4));
+  const words = title.split(" ");
+  if (ctx.measureText(title).width <= W || words.length < 2) {
+    fitText(ctx, title, SANS, size, 48, W, x, 280, 700);
+    return;
+  }
+  let best = null;
+  for (let i = 1; i < words.length; i++) {
+    const l1 = words.slice(0, i).join(" "), l2 = words.slice(i).join(" ");
+    const w = Math.max(ctx.measureText(l1).width, ctx.measureText(l2).width);
+    if (!best || w < best.w) best = { l1, l2, w };
+  }
+  size = 92;
+  ctx.font = font(size);
+  while (Math.max(ctx.measureText(best.l1).width, ctx.measureText(best.l2).width) > W && size > 44) ctx.font = font((size -= 4));
+  ctx.fillText(best.l1, x, 300 - size * 1.08);
+  ctx.fillText(best.l2, x, 300);
 }
 
 function fitText(ctx, text, family, max, min, width, x, y, weight = 400) {
@@ -283,93 +296,36 @@ function wrapText(ctx, text, x, y, maxW, lineH, maxLines) {
   if (line) ctx.fillText(line, x, y + lines * lineH);
 }
 
-function textureSize(quality) {
-  return PAPER_TEXTURE[quality] || PAPER_TEXTURE.thumbnail;
-}
-
-function drawAtQuality(state, quality) {
-  const { width, height } = textureSize(quality);
-  if (state.quality === quality && state.canvas.width === width && state.canvas.height === height) return;
-  state.quality = quality;
-  state.canvas.width = width;
-  state.canvas.height = height;
-  state.ctx = state.canvas.getContext("2d");
-  drawPaper(state);
-}
-
-function loadProjectImage(state, variant) {
-  const src = variant === "full" ? state.project.image : state.project.thumbnail;
-  const imageKey = variant === "full" ? "fullImage" : "thumbnailImage";
-  const requestedKey = variant === "full" ? "fullRequested" : "thumbnailRequested";
-  if (!src || state[requestedKey]) return;
-  state[requestedKey] = true;
-  const image = new Image();
-  image.decoding = "async";
-  image.onload = () => drawPaper(state);
-  image.onerror = () => { state[imageKey] = null; drawPaper(state); };
-  state[imageKey] = image;
-  image.src = src;
-}
-
-function releaseFullImage(state) {
-  if (!state.fullImage) return;
-  state.fullImage.onload = null;
-  state.fullImage.onerror = null;
-  state.fullImage.src = "";
-  state.fullImage = null;
-  state.fullRequested = false;
-}
-
-function upgradePaperTexture(index) {
-  const state = paperStates[index];
-  if (!state) return;
-  drawAtQuality(state, "detail");
-  loadProjectImage(state, "full");
-}
-
-function downgradePaperTexture(index) {
-  const state = paperStates[index];
-  if (!state) return;
-  drawAtQuality(state, "thumbnail");
-  releaseFullImage(state);
-}
-
 function getPaperMaterial(index) {
   if (paperStates[index]) return paperStates[index].material;
   const project = PROJECTS[index];
   const canvas = document.createElement("canvas");
-  const { width, height } = textureSize("thumbnail");
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = TEX_W;
+  canvas.height = TEX_H;
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.generateMipmaps = false;
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
-  texture.anisotropy = 1;
+  texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
   texture.rotation = Math.PI;
   texture.center.set(0.5, 0.5);
   texture.repeat.set(1, -1);
   const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9, metalness: 0, side: THREE.DoubleSide });
-  const state = {
-    project, index, canvas, ctx: canvas.getContext("2d"), texture, material,
-    quality: "thumbnail", thumbnailImage: null, fullImage: null,
-    thumbnailRequested: false, fullRequested: false,
-  };
+  const state = { project, index, canvas, ctx: canvas.getContext("2d"), texture, material, image: null };
+  if (project.image) {
+    state.image = new Image();
+    state.image.onload = () => drawPaper(state);
+    state.image.src = project.image;
+  }
   drawPaper(state);
   paperStates[index] = state;
-  loadProjectImage(state, "thumbnail");
   return material;
 }
 
 // 手写字体加载完成后重绘
 if (document.fonts) {
   Promise.all([
-    ...["400", "500", "700", "900"].flatMap((w) => [
-      document.fonts.load(`${w} 100px "Noto Sans SC"`, PROJECTS.map((p) => p.title + p.category + p.summary + p.en).join("") + "封面图占位查看详情即将上线No.0123456789"),
-      document.fonts.load(`${w} 100px "Space Grotesk"`, "PROJECT ONE 2023 2024 2025 2026 No.0123456789"),
-      document.fonts.load(`${w} 100px "IBM Plex Mono"`, "No.0123456789"),
-    ]),
+    ...["400", "500", "600"].flatMap((w) => [`${w} 100px "Space Grotesk"`, `${w} 100px "IBM Plex Mono"`]).map((f) => document.fonts.load(f)),
+    ...["400", "500", "700", "900"].map((w) =>
+      document.fonts.load(`${w} 100px "Noto Sans SC"`, PROJECTS.map((p) => p.title + p.category + p.summary + p.en).join("") + "封面图占位查看详情即将上线No.0123456789")),
   ]).then(() => paperStates.forEach((s) => s && drawPaper(s))).catch(() => {});
 }
 
@@ -478,18 +434,6 @@ function keepInStage(dt) {
     else if (b.position.x > maxX) { if (b.velocity.x > 0) b.velocity.x *= -0.42; b.velocity.x -= 3 * dt; }
     if (b.position.z < minZ) { if (b.velocity.z < 0) b.velocity.z *= -0.42; b.velocity.z += 3 * dt; }
     else if (b.position.z > maxZ) { if (b.velocity.z > 0) b.velocity.z *= -0.42; b.velocity.z -= 3 * dt; }
-  }
-}
-
-// 某些 WebGL / Cannon 组合下，静态 Plane 的碰撞面会在初始化后丢失更新，
-// 导致纸团穿过可见地面。这里把动态球心限制在纸团的静止高度，保留横向碰撞与拖拽手感。
-function keepOnFloor() {
-  for (const p of papers) {
-    const b = p.body;
-    if (b.type !== CANNON.Body.DYNAMIC || b.position.y >= restCenterY) continue;
-    b.position.y = restCenterY;
-    if (b.velocity.y < 0) b.velocity.y = 0;
-    b.aabbNeedsUpdate = true;
   }
 }
 
@@ -633,6 +577,8 @@ function handleClick(e) {
   const p = pick(e);
   const prev = active;
   // 点空白处或点已展开的纸：把它揉回去
+  // 点已展开、且有图集的纸：进入滑动浏览
+  if (p && p === prev && p.state === "open" && PROJECTS[p.index].gallery) { openViewer(p.index); return; }
   if (!p || p === prev) { if (prev) closeActive(); return; }
   if (p.state !== "closed") return;
   if (prev) closeActive();
@@ -683,8 +629,6 @@ function releaseGrab(p, toss) {
 }
 
 function openPaper(p) {
-  // 仅在用户打开这个项目时，为这一张纸生成高清纹理并请求原图。
-  upgradePaperTexture(p.index);
   setDynamic(p, false);
   syncMeshToBody(p);
   p.state = "opening";
@@ -724,8 +668,16 @@ function showCard(i) {
   const pr = PROJECTS[i];
   ui.cardNo.textContent = `No.${pad2(i + 1)}`;
   ui.cardTitle.textContent = pr.title;
-  ui.cardMeta.textContent = `${pr.category} · ${pr.year}`;
-  if (pr.link) {
+  ui.cardMeta.textContent = [pr.category, pr.year].filter(Boolean).join(" · ");
+  ui.cardLink.onclick = null;
+  if (pr.gallery) {
+    ui.cardLink.href = "#work";
+    ui.cardLink.textContent = `滑动浏览 ${pr.gallery.length} 张 →`;
+    ui.cardLink.removeAttribute("aria-disabled");
+    ui.cardLink.removeAttribute("target");
+    ui.cardLink.onclick = (e) => { e.preventDefault(); openViewer(i); };
+  } else if (pr.link) {
+    ui.cardLink.target = "_blank";
     ui.cardLink.href = pr.link;
     ui.cardLink.textContent = "查看项目 →";
     ui.cardLink.removeAttribute("aria-disabled");
@@ -747,7 +699,13 @@ function updateSeen() {
 ui.cardClose.addEventListener("click", closeActive);
 // 打开“关于 / 联系”面板时，把展开的纸揉回去
 addEventListener("portfolio:route", (e) => { if (e.detail !== "work") closeActive(); });
-addEventListener("keydown", (e) => { if (e.key === "Escape") closeActive(); });
+addEventListener("keydown", (e) => {
+  if (e.key !== "Escape" || ui.root.classList.contains("is-viewer")) return; // 图集打开时 Esc 只关图集
+  closeActive();
+});
+function openViewer(i) {
+  if (window.ProjectViewer) window.ProjectViewer.open(i);
+}
 
 // ==================================================
 // 主循环
@@ -759,7 +717,6 @@ renderer.setAnimationLoop(() => {
   last = now;
   if (anim) {
     world.step(1 / 60, dt, 3);
-    keepOnFloor();
     keepInStage(dt);
     for (const p of papers) update(p, dt);
   }
@@ -783,13 +740,7 @@ function update(p, dt) {
     p.frameIdx = lerp(p.start.frameIdx, maxF, e);
     syncMeshToBody(p, lerp(p.start.scale, CLOSED_SCALE, e));
     setFrame(p, p.frameIdx);
-    if (t >= 1) {
-      p.state = "rolling";
-      p.frameIdx = maxF;
-      setFrame(p, maxF);
-      // 项目被揉回纸团后释放大图，恢复低分辨率常态纹理。
-      downgradePaperTexture(p.index);
-    }
+    if (t >= 1) { p.state = "rolling"; p.frameIdx = maxF; setFrame(p, maxF); }
   } else if (p.state === "grabbed") {
     const b = p.body, g = p.grab;
     let vx = (g.x - b.position.x) * GRAB_STIFF, vy = (g.y - b.position.y) * GRAB_STIFF, vz = (g.z - b.position.z) * GRAB_STIFF;
@@ -814,8 +765,6 @@ addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   placeCamera();
-  renderer.setPixelRatio(renderPixelRatio());
-  composer.setPixelRatio(renderPixelRatio());
   renderer.setSize(innerWidth, innerHeight);
   composer.setSize(innerWidth, innerHeight);
   refreshOpenPose();

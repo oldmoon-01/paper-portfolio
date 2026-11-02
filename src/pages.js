@@ -4,7 +4,7 @@
 (function () {
   // —— 改成你的信息 ——
   const CONTACT = {
-    email: "hello@yourname.com",
+    email: "oldmoonzz@163.com",
     timeZone: "Asia/Shanghai", // 你所在地的时区（IANA 名称）
   };
 

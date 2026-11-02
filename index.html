@@ -7,10 +7,10 @@
 <meta name="claude:viewport-fit-sides" content="cover" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   /* 布局：全屏 3D 舞台（作品）；关于 / 联系是从右侧推入的方格纸面板，左边露出纸团舞台。
-     单一视觉：蓝墙 + 灰白地面，不跟随系统深色模式。英文 / 中文 / 数字分别使用三套字体。 */
+     单一视觉：蓝墙 + 灰白地面，不跟随系统深色模式。字体统一 Noto Sans SC。 */
   :root {
     color-scheme: light;
     --wall: #3a5bff;      /* 墙（3D 里受光后会略深） */
@@ -23,8 +23,9 @@
     --paper: #f3f2ed;
     --paper-line: rgba(44, 70, 196, 0.08);
     --ok: #1f8a5b;
-    --font: "Space Grotesk", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-    --font-mono: "IBM Plex Mono", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", monospace;
+    /* 英文 Space Grotesk → 中文思源黑体（Noto Sans SC）；数字与交互提示用 IBM Plex Mono */
+    --font: "Space Grotesk", "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", "Noto Sans SC", "Source Han Sans SC", ui-monospace, Menlo, monospace;
     --gutter-l: max(20px, env(safe-area-inset-left, 0px));
     --gutter-r: max(20px, env(safe-area-inset-right, 0px));
     --top: calc(env(safe-area-inset-top, 0px) + 22px);
@@ -41,9 +42,9 @@
 
   /* 左上：名字（在蓝墙上 → 白字） */
   .id { top: var(--top); left: var(--gutter-l); display: grid; gap: 6px; color: var(--on-wall); }
-  .id-name { margin: 0; font-size: clamp(20px, 2.12vw, 25px); font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+  .id-name { margin: 0; font-size: clamp(19px, 2.1vw, 24px); font-weight: 600; line-height: 1; letter-spacing: -0.01em; }
   .id-name a { text-decoration: none; }
-  .id-role { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.055em; text-transform: uppercase; color: var(--on-wall-soft); }
+  .id-role { font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-wall-soft); }
 
   /* 右上：导航 */
   .nav { top: calc(var(--top) + 2px); right: var(--gutter-r); display: flex; gap: 22px; font-size: 14px; font-weight: 500; color: var(--on-wall); }
@@ -53,13 +54,13 @@
 
   /* 左下：一句话 + 操作提示（在地面上 → 深色字） */
   .lede { bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); left: var(--gutter-l); max-width: min(480px, calc(100vw - 150px)); display: grid; gap: 10px; transition: opacity .35s ease, transform .35s ease; }
-  .lede-line { margin: 0; font-size: clamp(20px, 2.2vw, 30px); font-weight: 500; line-height: 1.3; text-wrap: balance; }
-  .lede-hint { font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--ink-soft); display: flex; gap: 6px 14px; flex-wrap: wrap; }
+  .lede-line { margin: 0; font-size: clamp(20px, 2.2vw, 30px); font-weight: 400; line-height: 1.3; text-wrap: balance; }
+  .lede-hint { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); display: flex; gap: 6px 14px; flex-wrap: wrap; }
   .lede-hint kbd { font-family: inherit; font-size: 11px; border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; }
 
   /* 右下：计数 */
-  .tally { bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); right: var(--gutter-r); text-align: right; font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--ink-soft); display: grid; gap: 5px; transition: opacity .35s ease; }
-  .tally strong { font-family: var(--font-mono); font-weight: 600; font-size: 34px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums slashed-zero; letter-spacing: -0.085em; }
+  .tally { bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); right: var(--gutter-r); text-align: right; font-family: var(--mono); font-size: 12px; color: var(--ink-soft); display: grid; gap: 4px; transition: opacity .35s ease; }
+  .tally strong { font-weight: 500; font-size: 40px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums slashed-zero; letter-spacing: -0.04em; }
 
   .is-open .lede, .is-sheet .lede { opacity: 0; transform: translateY(8px); }
   .is-open .tally, .is-sheet .tally { opacity: 0; }
@@ -76,9 +77,9 @@
   }
   @keyframes card-in { from { opacity: 0; transform: translate(-50%, 16px); } }
   .card-text { min-width: 0; display: grid; gap: 3px; }
-  .card-no { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.055em; color: var(--wall-lit); font-variant-numeric: tabular-nums slashed-zero; }
+  .card-no { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--wall-lit); font-variant-numeric: tabular-nums; }
   .card-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .card-meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+  .card-meta { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); }
   .card-actions { display: flex; gap: 8px; }
   .btn {
     font: 500 14px/1 var(--font); color: var(--paper); background: var(--ink);
@@ -89,7 +90,7 @@
   .btn-ghost { background: transparent; color: var(--ink); }
   .btn-ghost:hover { background: var(--ink-faint); border-color: var(--ink); }
 
-  .loader { position: fixed; inset: 0; display: grid; place-items: center; z-index: 1; font-size: 15px; font-weight: 500; color: var(--on-wall); letter-spacing: 0.04em; }
+  .loader { position: fixed; inset: 0; display: grid; place-items: center; z-index: 1; font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--on-wall); letter-spacing: 0.04em; }
 
   /* ========== 关于 / 联系：右侧方格纸面板 ========== */
   .scrim { position: fixed; inset: 0; z-index: 2; background: rgba(15, 25, 90, 0.18); opacity: 0; pointer-events: none; transition: opacity .4s ease; }
@@ -114,7 +115,7 @@
   .is-sheet .nav { color: var(--ink); }
   .band { display: none; }
 
-  .eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--wall-lit); }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--wall-lit); }
   .sheet h2 { margin: 10px 0 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 900; line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
   .sheet p { margin: 0; font-size: 15px; line-height: 1.85; max-width: 36em; }
   .muted { color: var(--ink-soft); }
@@ -134,10 +135,10 @@
 
   .rows { list-style: none; margin: 0; padding: 0; }
   .rows li { display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 16px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid var(--ink-faint); font-size: 14px; }
-  .rows .when { white-space: nowrap; color: var(--ink-soft); font-family: var(--font-mono); font-variant-numeric: tabular-nums slashed-zero; font-size: 12px; }
+  .rows .when { font-family: var(--mono); white-space: nowrap; color: var(--ink-soft); font-variant-numeric: tabular-nums; font-size: 13px; }
   .rows .what { font-weight: 500; min-width: 0; }
   .rows .what small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 13px; margin-top: 2px; }
-  .rows .tag { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+  .rows .tag { font-size: 12px; color: var(--ink-soft); }
 
   .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
   .chips li { font-size: 13px; padding: 6px 12px; border: 1px solid var(--ink-faint); background: var(--paper); }
@@ -155,7 +156,7 @@
   @keyframes pulse { 70% { box-shadow: 0 0 0 7px rgba(31,138,91,0); } 100% { box-shadow: 0 0 0 0 rgba(31,138,91,0); } }
 
   .mail { display: grid; gap: 12px; padding: 24px; background: var(--wall-lit); color: var(--on-wall); }
-  .mail-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.055em; color: var(--on-wall-soft); }
+  .mail-label { font-size: 12px; letter-spacing: 0.08em; color: var(--on-wall-soft); }
   .mail-addr { font-size: clamp(22px, 3vw, 34px); font-weight: 700; letter-spacing: -0.01em; user-select: all; overflow-wrap: anywhere; }
   .mail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .mail .btn { background: var(--on-wall); color: var(--wall-lit); border-color: var(--on-wall); }
@@ -170,13 +171,67 @@
 
   .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--ink-faint); border: 1px solid var(--ink-faint); }
   .facts div { background: var(--paper); padding: 16px; display: grid; gap: 6px; min-width: 0; }
-  .facts dt { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
-  .facts dd { margin: 0; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums slashed-zero; }
+  .facts dt { font-size: 12px; color: var(--ink-soft); }
+  .facts dd { margin: 0; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  #local-time { font-family: var(--mono); font-weight: 500; }
 
   .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: s; }
   .steps li { counter-increment: s; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--ink-faint); font-size: 14px; line-height: 1.7; }
-  .steps li::before { content: counter(s, decimal-leading-zero); font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--wall-lit); font-variant-numeric: tabular-nums slashed-zero; }
+  .steps li::before { content: counter(s, decimal-leading-zero); font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--wall-lit); font-variant-numeric: tabular-nums; }
   .steps b { font-weight: 700; }
+
+
+  /* ========== 项目图集：展开纸团后的全屏横向浏览 ========== */
+  .viewer {
+    --v-bg: #0d0e11; --v-fg: #f2f2ee; --v-soft: rgba(242, 242, 238, 0.6); --v-line: rgba(242, 242, 238, 0.14); --v-accent: #8da0ff;
+    position: fixed; inset: 0; z-index: 10; background: var(--v-bg); color: var(--v-fg);
+    display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+    opacity: 0; transform: scale(0.985); transition: opacity .32s ease, transform .32s ease;
+  }
+  .viewer.is-in { opacity: 1; transform: none; }
+  .v-bar, .v-foot { display: flex; align-items: center; gap: 16px; padding-block: 16px; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+  .v-bar { border-bottom: 1px solid var(--v-line); }
+  .v-no { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--v-accent); }
+  .v-name { font-size: 15px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .v-count { margin-left: auto; font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums slashed-zero; color: var(--v-soft); white-space: nowrap; }
+  .v-count b { color: var(--v-fg); font-weight: 500; }
+  .v-btn { font: 500 13px/1 var(--mono); color: var(--v-fg); background: transparent; border: 1px solid var(--v-line); padding: 10px 14px; cursor: pointer; white-space: nowrap; }
+  .v-btn:hover:not(:disabled) { border-color: var(--v-fg); }
+  .v-btn:disabled { opacity: 0.3; cursor: default; }
+  .viewer:focus { outline: none; }
+  .v-btn:focus-visible, .vi-start:focus-visible { outline: 2px solid var(--v-accent); outline-offset: 2px; }
+
+  .v-track { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; cursor: grab; }
+  .v-track::-webkit-scrollbar { display: none; }
+  .v-track.is-drag { scroll-snap-type: none; cursor: grabbing; user-select: none; }
+  .slide { flex: 0 0 100%; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; margin: 0; box-sizing: border-box; min-width: 0; }
+  .slide-img { position: relative; --pad: clamp(12px, 3vw, 40px); }
+  .slide-img img { position: absolute; top: var(--pad); left: var(--pad); width: calc(100% - 2 * var(--pad)); height: calc(100% - 2 * var(--pad)); object-fit: contain; display: block; user-select: none; -webkit-user-drag: none; }
+
+  .intro-scroll { height: 100%; overflow-y: auto; box-sizing: border-box; padding-block: clamp(28px, 6vh, 72px); padding-left: max(24px, env(safe-area-inset-left, 0px), 6vw); padding-right: max(24px, env(safe-area-inset-right, 0px), 6vw); display: grid; align-content: start; gap: 40px; cursor: auto; }
+  .vi-head { display: grid; gap: 12px; }
+  .vi-no { font-family: var(--mono); font-size: 13px; color: var(--v-accent); }
+  .vi-title { margin: 0; font-size: clamp(40px, 7vw, 104px); font-weight: 700; line-height: 0.95; letter-spacing: -0.035em; text-wrap: balance; }
+  .vi-sub { margin: 0; font-size: clamp(16px, 1.6vw, 20px); color: var(--v-soft); }
+  .vi-meta { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, max-content)); gap: 12px 48px; padding-block: 18px; border-top: 1px solid var(--v-line); border-bottom: 1px solid var(--v-line); }
+  .vi-meta div { display: grid; gap: 4px; min-width: 0; }
+  .vi-meta dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--v-soft); }
+  .vi-meta dd { margin: 0; font-size: 14px; font-weight: 500; }
+  .vi-desc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; max-width: 1180px; cursor: text; }
+  .vi-desc > div { display: grid; gap: 16px; align-content: start; }
+  .vi-desc p { margin: 0; font-size: 15px; line-height: 1.75; color: rgba(242, 242, 238, 0.86); }
+  .vi-desc [lang="zh-CN"] p { line-height: 1.95; }
+  .vi-h { margin: 8px 0 -6px; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--v-accent); }
+  .vi-desc > div > .vi-h:first-child { margin-top: 0; }
+  .vi-start { justify-self: start; font: 500 13px/1 var(--mono); color: var(--v-bg); background: var(--v-fg); border: 0; padding: 14px 18px; cursor: pointer; }
+  .vi-start:hover { background: var(--v-accent); }
+
+  .v-foot { border-top: 1px solid var(--v-line); }
+  .v-caption { font-family: var(--mono); font-size: 12px; color: var(--v-soft); min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .v-progress { flex: 0 0 min(220px, 30vw); height: 2px; background: var(--v-line); overflow: hidden; }
+  .v-progress i { display: block; height: 100%; background: var(--v-fg); transform-origin: left; transition: transform .35s ease; }
+  .v-nav { display: flex; gap: 6px; }
 
   @media (max-width: 860px) {
     .sheet { width: 100vw; box-shadow: none; }
@@ -190,7 +245,7 @@
   @media (max-width: 560px) {
     .nav { gap: 16px; font-size: 13px; }
     .id-role { font-size: 11px; }
-    .tally strong { font-size: 26px; }
+    .tally strong { font-size: 30px; }
     .lede { max-width: calc(100vw - 120px); }
     .lede-hint { font-size: 11px; }
     .card { grid-template-columns: 1fr; }
@@ -202,10 +257,14 @@
     .rows .tag, .arrow { display: none; }
     .clients { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .facts { grid-template-columns: 1fr; }
+    .vi-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; }
+    .vi-desc { grid-template-columns: 1fr; gap: 28px; }
+    .v-progress { display: none; }
+    .v-bar, .v-foot { gap: 10px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .card, .status::before { animation: none; }
-    .lede, .tally, .sheet, .scrim { transition: none; }
+    .lede, .tally, .sheet, .scrim, .viewer, .v-progress i { transition: none; }
   }
 </style>
 <script type="importmap">
@@ -219,7 +278,7 @@
 </script>
 </head>
 <body>
-  <div id="app" aria-label="可以点击和拖动的纸团，每个纸团是一个项目"></div>
+  <div id="app" aria-label="可以点击和拖动的纸团，展开一些想法"></div>
   <div class="loader" id="loader">正在揉纸团…</div>
 
   <header class="hud id">
@@ -245,7 +304,7 @@
   <div class="hud tally" aria-live="polite">
     <span>已打开</span>
     <strong><span id="seen">00</span>/<span id="count">00</span></strong>
-    <span>2023 — 2026</span>
+    <span>2021 — 2026</span>
   </div>
 
   <section class="card" id="card" hidden aria-live="polite">
@@ -270,7 +329,7 @@
         <div class="intro-text">
           <div>
             <div class="eyebrow">About · 关于</div>
-            <h2 id="about-title">你好，我是<span class="ph">Songyue Zhao</span>。</h2>
+            <h2 id="about-title">你好，我是 Songyue Zhao。</h2>
           </div>
           <p><span class="ph">一段 2–3 句的自我介绍：你是做什么的、做了多少年、关注什么问题。比如：独立设计师与前端开发者，过去 6 年为品牌和科技公司做网站、交互和视觉系统。</span></p>
           <p class="muted"><span class="ph">第二段可以写工作方式或个人兴趣：喜欢把设计直接做成能跑的代码，也喜欢在纸上先画很多草图。</span></p>
@@ -331,10 +390,10 @@
 
       <section class="mail" aria-label="邮箱">
         <span class="mail-label">EMAIL</span>
-        <span class="mail-addr" id="mail-addr">hello@yourname.com</span>
+        <span class="mail-addr" id="mail-addr">oldmoonzz@163.com</span>
         <div class="mail-actions">
           <button class="btn" id="copy-mail" type="button">复制邮箱</button>
-          <a class="btn btn-ghost" id="mail-link" href="mailto:hello@yourname.com">用邮件客户端打开</a>
+          <a class="btn btn-ghost" id="mail-link" href="mailto:oldmoonzz@163.com">用邮件客户端打开</a>
         </div>
       </section>
 
@@ -369,8 +428,28 @@
     </div>
   </article>
 
+  <!-- ==================== 项目图集 ==================== -->
+  <div class="viewer" id="viewer" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="v-name" hidden>
+    <header class="v-bar">
+      <span class="v-no" id="v-no">No.01</span>
+      <span class="v-name" id="v-name">项目</span>
+      <span class="v-count"><b id="v-cur">01</b> / <span id="v-total">01</span></span>
+      <button class="v-btn" id="v-close" type="button">关闭 ✕</button>
+    </header>
+    <div class="v-track" id="v-track"></div>
+    <footer class="v-foot">
+      <span class="v-caption" id="v-caption" aria-live="polite"></span>
+      <div class="v-progress" aria-hidden="true"><i id="v-bar"></i></div>
+      <div class="v-nav">
+        <button class="v-btn" id="v-prev" type="button" aria-label="上一张">←</button>
+        <button class="v-btn" id="v-next" type="button" aria-label="下一张">→</button>
+      </div>
+    </footer>
+  </div>
+
   <script src="./src/projects.js"></script>
   <script src="./src/pages.js"></script>
+  <script src="./src/viewer.js"></script>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>

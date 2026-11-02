@@ -12,7 +12,7 @@ python3 -m http.server 8000
 ```
 
 ## 改成你的内容
-- `src/projects.js`：项目列表。加一条就多一个纸团；`thumbnail` 填纸团缩略图（640×336 WebP / AVIF，建议不超过 120KB），`image` 填点击后才加载的高清封面（长边 1600–2000px WebP / AVIF），`link` 填项目页链接。
+- `src/projects.js`：项目列表。加一条就多一个纸团；`image` 填封面图路径（建议 1200×630），`link` 填项目页链接。
 - `index.html`：名字、身份、首屏文案、导航，以及关于 / 联系页的内容（带浅蓝底虚线的文字都是占位）。
 - `src/pages.js` 顶部：邮箱和你所在地的时区（联系页会显示当地时间）。
 - `src/main.js` 顶部：墙和地面颜色（`COLORS`，改墙色时同步改 `index.html` 里的 `--wall` / `--wall-lit`），`OPEN_FRAME` 控制展开后保留多少褶皱。
