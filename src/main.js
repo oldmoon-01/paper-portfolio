@@ -7,6 +7,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { SSAOPass } from "three/examples/jsm/postprocessing/SSAOPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { paintGraffiti, paintWallGrain, GRAFFITI_RECT } from "./graffiti.js";
 
 const PROJECTS = window.PROJECTS || [];
 
@@ -51,8 +52,9 @@ function placeCamera() {
   }
   STAGE.minX = -STAGE.maxX;
   camera.updateProjectionMatrix();
+  camera.updateMatrixWorld();
+  placeGraffiti();
 }
-placeCamera();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -73,13 +75,74 @@ floor.position.set(0, FLOOR_Y, 1);
 floor.receiveShadow = true;
 scene.add(floor);
 
+// 墙面加一层很淡的灰泥底纹，让喷漆有“墙”可依附
+const wallGrain = new THREE.CanvasTexture(paintWallGrain());
+wallGrain.wrapS = wallGrain.wrapT = THREE.RepeatWrapping;
+wallGrain.repeat.set(10, 3.75);
+wallGrain.colorSpace = THREE.SRGBColorSpace;
 const wall = new THREE.Mesh(
   new THREE.PlaneGeometry(16, 6),
-  new THREE.MeshStandardMaterial({ color: COLORS.wall }),
+  new THREE.MeshStandardMaterial({ color: COLORS.wall, map: wallGrain, roughness: 0.95 }),
 );
 wall.position.set(0, FLOOR_Y + 3, WALL_Z);
 wall.receiveShadow = true;
 scene.add(wall);
+
+// ==================================================
+// 墙面涂鸦：一张贴在墙面前 4mm 的喷漆贴花，和墙一样受光、接收纸团投影
+// ==================================================
+let graffiti = null;
+const _gRay = new THREE.Raycaster();
+const _wallPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -WALL_Z);
+const _gHit = new THREE.Vector3();
+function placeGraffiti() {
+  if (!graffiti) return;
+  const gw = GRAFFITI_RECT.x1 - GRAFFITI_RECT.x0;
+  // 屏幕右上角射线打到墙上的位置 → 墙面可见的半宽
+  _gRay.setFromCamera(new THREE.Vector2(1, 1), camera);
+  const halfW = _gRay.ray.intersectPlane(_wallPlane, _gHit) ? Math.abs(_gHit.x) : 2.5;
+  if (camera.aspect < 0.9) {
+    // 手机竖屏：居中、缩到屏幕宽度内，放在导航和纸团之间
+    const s = Math.min(1, (2 * halfW * 0.94) / gw);
+    graffiti.scale.setScalar(s);
+    graffiti.position.set(0, 0.65, WALL_Z + 0.004);
+  } else {
+    // 横屏：中央偏右，尽量大；顶部留在导航下方（墙面 y≈1.24 以下）
+    const gh = GRAFFITI_RECT.y1 - GRAFFITI_RECT.y0;
+    const s = Math.min(1.12, (2 * halfW * 0.7) / gw);
+    graffiti.scale.setScalar(s);
+    graffiti.position.set(Math.min(0.36 * halfW, halfW - (gw * s) / 2 - 0.08), 1.24 - (gh * s) / 2, WALL_Z + 0.004);
+  }
+}
+async function addGraffiti() {
+  // 等涂鸦字体加载（最多 3 秒，超时就用后备字体）
+  if (document.fonts) {
+    await Promise.race([
+      Promise.all([
+        document.fonts.load('100px "Sedgwick Ave Display"', "CRUMPLETHERULS"),
+        document.fonts.load('100px "Permanent Marker"', "CREATEYOUROWN"),
+      ]),
+      new Promise((r) => setTimeout(r, 3000)),
+    ]).catch(() => {});
+  }
+  const tex = new THREE.CanvasTexture(paintGraffiti());
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const mat = new THREE.MeshStandardMaterial({
+    map: tex, transparent: true, depthWrite: false, roughness: 0.8, metalness: 0,
+    // 喷漆比墙面更鲜艳一点：用自身贴图做弱自发光
+    emissive: 0x4a4a4a, emissiveMap: tex,
+    polygonOffset: true, polygonOffsetFactor: -2,
+  });
+  graffiti = new THREE.Mesh(
+    new THREE.PlaneGeometry(GRAFFITI_RECT.x1 - GRAFFITI_RECT.x0, GRAFFITI_RECT.y1 - GRAFFITI_RECT.y0),
+    mat,
+  );
+  graffiti.receiveShadow = true;
+  scene.add(graffiti);
+  placeGraffiti();
+}
+placeCamera();
 
 scene.add(new THREE.AmbientLight(0xffffff, 1.25));
 const key = new THREE.DirectionalLight(0xffffff, 1.15);
@@ -492,7 +555,7 @@ function spawnPaper(index, i) {
   // 前三个落在固定位置，其余随机散在舞台中间
   const w = STAGE.maxX - radius * 1.5;
   const fixed = [[-0.52, -0.1], [0, 0.12], [0.52, -0.06]][i];
-  const [x, z] = fixed ? [fixed[0] * w, fixed[1]] : [rand(-w, w) * 0.8, rand(-0.75, 1.0)];
+  const [x, z] = fixed ? [fixed[0] * w, fixed[1]] : [rand(-w, w) * 0.8, rand(-0.45, 1.0)];
   base.mesh.position.set(x, restMeshY, z);
   base.mesh.scale.setScalar(CLOSED_SCALE);
   scene.add(base.mesh);
@@ -522,6 +585,9 @@ async function init() {
   restCenterY = FLOOR_Y + radius * 1.08;
   restMeshY = restCenterY - crumpleCenter.y * CLOSED_SCALE;
   floorBody.position.y = restCenterY - radius;
+
+  // 先把涂鸦喷到墙上，再让纸团落下（避免绘制时卡住动画）
+  try { await addGraffiti(); } catch (err) { console.warn("graffiti", err); }
 
   ui.loader.hidden = true;
   ui.count.textContent = pad2(PROJECTS.length);
