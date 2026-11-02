@@ -36,7 +36,6 @@ window.ProjectViewer = (function () {
       <section class="slide slide-intro" aria-label="项目介绍">
         <div class="intro-scroll">
           <div class="vi-head">
-            <span class="vi-no">No.${pad2(i + 1)}</span>
             <h2 class="vi-title" id="viewer-title">${esc(project.title)}</h2>
             ${project.en ? `<p class="vi-sub">${esc(project.en)}</p>` : ""}
           </div>

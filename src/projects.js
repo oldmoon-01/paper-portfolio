@@ -12,7 +12,7 @@ window.PROJECTS = [
   {
     title: "Stay Wise, Stay True",
     en: "保持理智，保持真实",
-    category: "社会议题活动",
+    category: "Social Campaign",
     year: "",
     summary: "帮助年轻人识别社交媒体上的假新闻，包含 Instagram 账号与网站设计。",
     link: "",
@@ -40,7 +40,7 @@ window.PROJECTS = [
   {
     title: "Sunnyup",
     en: "种太阳",
-    category: "儿童教育套装",
+    category: "Packaging Design",
     year: "",
     summary: "让孩子在玩耍中提高创造力、激发感官能力的教育套装，鼓励他们尊重和保护自然。",
     link: "",
@@ -66,7 +66,7 @@ window.PROJECTS = [
   {
     title: "CONSOLATION RETICULE",
     en: "安慰手提袋",
-    category: "个人档案项目",
+    category: "Editorial / Archive",
     year: "",
     summary: "把疫情封控期间的日常、情绪与想象记录在手提袋上，分发物资时赠予邻居。",
     link: "",
@@ -92,7 +92,7 @@ window.PROJECTS = [
   {
     title: "REAL SYMPTOM, FAKE PRESCRIPTION",
     en: "真病症，伪药方",
-    category: "参与式展览",
+    category: "Exhibition Design",
     year: "",
     summary: "与观众共同完成的项目：在药盒里写下让你不适的症状，和能治愈你的专属“药方”。",
     link: "",
@@ -122,7 +122,7 @@ window.PROJECTS = [
   {
     title: "AUTUMN RUSH",
     en: "秋潮",
-    category: "音乐节视觉",
+    category: "Music Festival Identity",
     brief: "D&AD Brief · Team Project",
     year: "",
     summary: "为音乐节打造的视觉形象，把秋季元素与音乐的激情和能量融合在一起。",
@@ -148,7 +148,7 @@ window.PROJECTS = [
   {
     title: "SEAFRONT",
     en: "临海露营",
-    category: "品牌设计",
+    category: "Brand Identity",
     year: "",
     summary: "把豪华露营与艺术活动结合，为城市年轻人重新定义露营品牌。",
     link: "",
@@ -174,7 +174,7 @@ window.PROJECTS = [
   {
     title: "Abaka AI",
     en: "品牌视觉系统拓展",
-    category: "Commercial Work",
+    category: "Brand Communications",
     year: "",
     summary: "主导 Abaka AI 品牌视觉系统的拓展，覆盖社交媒体、国际展会与品牌周边。",
     link: "",
@@ -198,7 +198,7 @@ window.PROJECTS = [
   {
     title: "2077AI",
     en: "品牌视觉系统拓展",
-    category: "Commercial Work",
+    category: "Visual Identity",
     year: "",
     summary: "以电光蓝、未来主义排版和等轴测图形，拓展 2077AI 及 2077 Ventures 的品牌视觉。",
     link: "",
@@ -220,7 +220,7 @@ window.PROJECTS = [
   {
     title: "REX",
     en: "REX Dollars",
-    category: "Commercial Work",
+    category: "Creative Brand Collateral",
     year: "",
     summary: "以美元纸币为灵感的 REX 创意推广物料，用于 CES 2026 线下推广。",
     link: "",
@@ -241,7 +241,7 @@ window.PROJECTS = [
   {
     title: "整数智能",
     en: "MolarData Intelligence",
-    category: "Commercial Work",
+    category: "Brand Visual Design",
     year: "",
     summary: "整数智能品牌视觉在行业展会、品牌推广、校园招聘与企业宣传中的拓展应用。",
     link: "",
@@ -263,7 +263,7 @@ window.PROJECTS = [
   {
     title: "ZODA",
     en: "品牌视觉与社区官网",
-    category: "Commercial Work",
+    category: "Brand / Web Experience",
     year: "",
     summary: "ZODA 品牌视觉体系与社区官网升级：深色科技美学、动态地球与模块化布局。",
     link: "",
@@ -282,5 +282,5 @@ window.PROJECTS = [
       ],
     },
   },
-  { title: "项目标题 12", en: "PROJECT TWELVE", category: "实验项目",   year: 2021, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#b5179e" },
+  { title: "项目标题 12", en: "PROJECT TWELVE", category: "Experimental Project",   year: 2021, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#b5179e" },
 ];

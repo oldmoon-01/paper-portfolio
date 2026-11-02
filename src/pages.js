@@ -12,6 +12,11 @@
   const root = document.documentElement;
   const navLinks = document.querySelectorAll(".nav a[data-route]");
   const scrim = document.getElementById("scrim");
+  const indexControl = document.querySelector(".work-index-control");
+  const indexTrigger = document.getElementById("work-index-trigger");
+  const indexPanel = document.getElementById("work-index");
+  const indexList = document.getElementById("work-index-list");
+  const indexCount = document.getElementById("work-index-count");
   let current = null;
 
   function route() {
@@ -45,6 +50,87 @@
   window.addEventListener("hashchange", route);
   route();
 
+  // 作品目录：展示前 11 个已有项目；第 12 个占位项目暂不进入目录。
+  const projectIndex = (window.PROJECTS || []).slice(0, 11);
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const escapeHtml = (value) => String(value).replace(/[&<>\"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char]);
+  indexCount.textContent = `${pad2(projectIndex.length)} PROJECTS`;
+  indexList.innerHTML = projectIndex.map((project, index) => `
+    <li>
+      <a href="#work" data-project-index="${index}" aria-label="打开项目 ${escapeHtml(project.title)}，分类：${escapeHtml(project.category)}">
+        <span class="work-index-no" aria-hidden="true">${pad2(index + 1)}</span>
+        <span class="work-index-title">${escapeHtml(project.title)}</span>
+        <span class="work-index-category">${escapeHtml(project.category)}</span>
+      </a>
+    </li>`).join("");
+
+  let closeIndexTimer = 0;
+  let indexOpenedOnHover = false;
+  const isIndexOpen = () => !indexPanel.hidden;
+  const openIndex = () => {
+    clearTimeout(closeIndexTimer);
+    indexPanel.hidden = false;
+    indexTrigger.setAttribute("aria-expanded", "true");
+  };
+  const closeIndex = () => {
+    clearTimeout(closeIndexTimer);
+    indexOpenedOnHover = false;
+    indexPanel.hidden = true;
+    indexTrigger.setAttribute("aria-expanded", "false");
+  };
+  const scheduleIndexClose = () => {
+    clearTimeout(closeIndexTimer);
+    closeIndexTimer = setTimeout(() => {
+      if (!indexControl.matches(":hover") && !indexControl.contains(document.activeElement)) closeIndex();
+    }, 120);
+  };
+
+  indexControl.addEventListener("pointerenter", () => {
+    if (!isIndexOpen()) indexOpenedOnHover = true;
+    openIndex();
+  });
+  indexControl.addEventListener("pointerleave", scheduleIndexClose);
+  indexControl.addEventListener("focusin", openIndex);
+  indexControl.addEventListener("focusout", (event) => {
+    if (!indexControl.contains(event.relatedTarget)) scheduleIndexClose();
+  });
+  indexTrigger.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") indexOpenedOnHover = false;
+  });
+  indexTrigger.addEventListener("click", () => {
+    // 鼠标移入会先打开目录；这一次点击不应立刻把它又关掉。
+    if (indexOpenedOnHover) {
+      indexOpenedOnHover = false;
+      return;
+    }
+    if (isIndexOpen()) closeIndex();
+    else openIndex();
+  });
+  indexList.addEventListener("click", (event) => {
+    const link = event.target.closest("a[data-project-index]");
+    if (!link) return;
+    event.preventDefault();
+    const index = Number(link.dataset.projectIndex);
+    closeIndex();
+    const openProject = () => window.ProjectViewer?.open(index);
+    if (location.hash !== "#work") {
+      location.hash = "work";
+      requestAnimationFrame(openProject);
+    } else {
+      openProject();
+    }
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (isIndexOpen() && !indexControl.contains(event.target)) closeIndex();
+  });
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isIndexOpen()) {
+      event.stopImmediatePropagation();
+      closeIndex();
+      indexTrigger.focus({ preventScroll: true });
+    }
+  });
+
   // 邮箱
   document.getElementById("mail-addr").textContent = CONTACT.email;
   document.getElementById("mail-link").href = "mailto:" + CONTACT.email;
@@ -71,13 +157,15 @@
 
   // 当地时间
   const timeEl = document.getElementById("local-time");
-  let fmt;
-  try {
-    fmt = new Intl.DateTimeFormat("zh-CN", { timeZone: CONTACT.timeZone, hour: "2-digit", minute: "2-digit", hour12: false });
-  } catch {
-    fmt = new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false });
+  if (timeEl) {
+    let fmt;
+    try {
+      fmt = new Intl.DateTimeFormat("zh-CN", { timeZone: CONTACT.timeZone, hour: "2-digit", minute: "2-digit", hour12: false });
+    } catch {
+      fmt = new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false });
+    }
+    const tick = () => (timeEl.textContent = fmt.format(new Date()));
+    tick();
+    setInterval(tick, 20000);
   }
-  const tick = () => (timeEl.textContent = fmt.format(new Date()));
-  tick();
-  setInterval(tick, 20000);
 })();

@@ -17,6 +17,7 @@
     --wall-lit: #2c46c4;  /* 墙在画面中的实际颜色，用于 HTML 背景和强调色 */
     --ink: #1b1d22;
     --ink-soft: rgba(27, 29, 34, 0.6);
+    --about-muted: #51535a;
     --ink-faint: rgba(27, 29, 34, 0.14);
     --on-wall: #ffffff;
     --on-wall-soft: rgba(255, 255, 255, 0.72);
@@ -46,11 +47,35 @@
   .id-name a { text-decoration: none; }
   .id-role { font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-wall-soft); }
 
-  /* 右上：导航 */
-  .nav { top: calc(var(--top) + 2px); right: var(--gutter-r); display: flex; gap: 22px; font-size: 14px; font-weight: 500; color: var(--on-wall); }
-  .nav a { text-decoration: none; padding-bottom: 3px; border-bottom: 2px solid transparent; }
-  .nav a:hover { border-bottom-color: currentColor; }
+  /* 右上：导航 + 项目目录 */
+  .nav { top: calc(var(--top) + 2px); right: var(--gutter-r); display: flex; gap: 22px; align-items: flex-start; font-size: 14px; font-weight: 500; color: var(--on-wall); }
+  .nav a, .nav-work { color: inherit; font: inherit; text-decoration: none; padding: 0 0 3px; border: 0; border-bottom: 2px solid transparent; background: transparent; cursor: pointer; }
+  .nav a:hover, .nav-work:hover, .nav-work[aria-expanded="true"] { border-bottom-color: currentColor; }
   .nav a[aria-current="page"] { border-bottom-color: currentColor; }
+  .work-index-control { position: static; }
+  .nav-work-mark { display: inline-block; margin-left: 4px; transition: transform .2s ease; }
+  .nav-work[aria-expanded="true"] .nav-work-mark { transform: rotate(45deg); }
+
+  .work-index {
+    position: fixed; z-index: 7; top: calc(var(--top) + 38px); right: var(--gutter-r);
+    width: min(52vw, 760px); height: min(80dvh, calc(100dvh - var(--top) - 48px));
+    box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain;
+    padding: clamp(18px, 2.4vw, 30px); background: rgba(17, 18, 20, .94); color: #f8f7f2;
+    box-shadow: 0 18px 42px rgba(7, 11, 31, .34);
+    animation: index-in .22s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes index-in { from { opacity: 0; transform: translateY(-8px); } }
+  .work-index-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
+  .work-index-head h2 { margin: 0; font-size: clamp(27px, 3vw, 40px); font-weight: 700; line-height: 1; letter-spacing: -.04em; }
+  .work-index-count { font-family: var(--mono); font-size: 12px; color: #bfc4d1; font-variant-numeric: tabular-nums; }
+  .work-index-list { display: grid; margin: 0; padding: 0; list-style: none; }
+  .work-index-list li { border-top: 1px solid rgba(248, 247, 242, .25); }
+  .work-index-list a { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 11px 0; color: inherit; text-decoration: none; }
+  .work-index-list a:hover { color: #bfcaff; }
+  .work-index-list a:focus-visible { outline-color: #ffffff; outline-offset: -2px; }
+  .work-index-no { font-family: var(--mono); font-size: 12px; color: #aeb6d5; font-variant-numeric: tabular-nums; }
+  .work-index-title { min-width: 0; font-size: clamp(14px, 1.7vw, 19px); font-weight: 600; line-height: 1.15; letter-spacing: -.02em; overflow-wrap: anywhere; }
+  .work-index-category { max-width: 28ch; padding: 4px 9px; border: 1px solid rgba(248, 247, 242, .68); border-radius: 999px; color: #e3e5ee; font-size: 11px; font-weight: 500; line-height: 1.15; text-align: center; }
 
   /* 左下：一句话 + 操作提示（在地面上 → 深色字） */
   .lede { bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); left: var(--gutter-l); max-width: min(480px, calc(100vw - 150px)); display: grid; gap: 10px; transition: opacity .35s ease, transform .35s ease; }
@@ -116,7 +141,7 @@
   .band { display: none; }
 
   .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--wall-lit); }
-  .sheet h2 { margin: 10px 0 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 900; line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
+  .sheet h1, .sheet h2 { margin: 10px 0 0; font-size: clamp(30px, 3.6vw, 46px); font-weight: 900; line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
   .sheet p { margin: 0; font-size: 15px; line-height: 1.85; max-width: 36em; }
   .muted { color: var(--ink-soft); }
   .ph { background: rgba(58, 91, 255, 0.06); border-bottom: 1px dashed rgba(44, 70, 196, 0.45); padding: 0 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; } /* 占位文字标记 */
@@ -149,6 +174,80 @@
   .next { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 0; border-top: 1.5px solid var(--ink); text-decoration: none; font-size: 18px; font-weight: 700; }
   .next span { font-size: 13px; font-weight: 400; color: var(--ink-soft); }
   .next:hover { color: var(--wall-lit); }
+
+  /* 联系页：让邮件成为页面收尾的主视觉，其他平台保持为简洁的资料索引。 */
+  #contact .sheet-inner { max-width: 680px; gap: clamp(44px, 7vw, 76px); }
+  .contact-hero { display: grid; gap: 16px; }
+  .contact-mark { margin: 0; font-size: 13px !important; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--wall-lit); }
+  .contact-hero h1 { margin: 0; max-width: 12ch; font-size: clamp(36px, 5vw, 58px); line-height: 1.08; }
+  .contact-deck { margin: 0; max-width: 32ch; font-size: clamp(18px, 2.4vw, 26px) !important; font-weight: 500; line-height: 1.45 !important; letter-spacing: -0.02em; }
+  .contact-letter { display: grid; gap: 18px; padding: clamp(24px, 4vw, 42px); background: #e7e6df; }
+  .contact-letter p { max-width: none; font-size: 16px; }
+  .contact-letter .contact-opening { font-size: 22px; font-weight: 700; line-height: 1.3; }
+  .contact-letter h2 { margin: 10px 0 0; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em; }
+  #contact .mail { padding: clamp(26px, 4vw, 44px); border-radius: 28px; gap: 16px; box-shadow: none; }
+  .mail-title { margin: 8px 0 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.08; letter-spacing: -0.03em; }
+  #contact .mail-label, .mail-footer { color: #dce3ff; }
+  .mail-footer { margin: 12px 0 0; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.42); font-size: 13px; font-weight: 500; letter-spacing: 0.04em; }
+  .contact-elsewhere { display: grid; gap: 24px; }
+  .contact-section-heading { display: grid; gap: 10px; }
+  .contact-section-heading h2 { margin: 0; font-size: clamp(24px, 3vw, 32px); line-height: 1.15; letter-spacing: -0.02em; }
+  .contact-section-heading p { margin: 0; color: var(--about-muted); }
+  .contact-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--ink-faint); }
+  .contact-links li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, auto); gap: 20px; align-items: center; padding: 20px; background: var(--paper); }
+  .contact-links strong, .contact-links span { display: block; }
+  .contact-links strong { font-size: 17px; line-height: 1.3; }
+  .contact-links span { margin-top: 4px; font-size: 14px; color: var(--about-muted); }
+  .contact-links a { min-width: 0; overflow-wrap: anywhere; text-align: right; color: var(--ink); font-size: 15px; font-weight: 600; text-decoration: none; }
+  .contact-links a:hover { color: var(--wall-lit); }
+
+  /* 关于页：作为一份可阅读的个人档案，而非项目列表的附属说明。 */
+  #about .sheet-inner { max-width: 680px; gap: clamp(44px, 7vw, 76px); }
+  .about-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 30%); gap: 24px; align-items: end; }
+  .about-hero-copy { display: grid; gap: 18px; min-width: 0; }
+  .about-hero h1 { margin: 0; max-width: none; }
+  .about-deck { margin: 0; max-width: 24ch; font-size: clamp(20px, 2.4vw, 28px) !important; font-weight: 700; line-height: 1.35 !important; letter-spacing: -0.025em; }
+  .about-role { margin: 0; font-size: 13px !important; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--wall-lit); }
+  .about-portrait { margin: 0; width: 100%; aspect-ratio: 4 / 5; background: #d4d2cf; overflow: hidden; }
+  .about-portrait img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .about-letter { display: grid; gap: 18px; padding: clamp(24px, 4vw, 42px); background: #e7e6df; }
+  .about-letter p { max-width: none; }
+  .about-letter p, .about-section > p { font-size: 16px; }
+  .about-letter > h2, .about-letter h3, .about-section h2 { margin: 12px 0 0; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em; }
+  .about-section { display: grid; gap: 22px; }
+  .about-section > p { max-width: 42em; }
+  .about-section-heading { display: grid; gap: 10px; }
+  .about-section-heading h2 { margin: 0; font-size: clamp(24px, 3vw, 32px); }
+  .about-section-heading p { margin: 0; color: var(--about-muted); }
+  .about-capabilities { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 36px; }
+  .about-capabilities li { display: grid; gap: 8px; min-width: 0; }
+  .about-capabilities strong { font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; }
+  .about-capabilities span { font-size: 14px; line-height: 1.7; color: var(--about-muted); }
+  .about-throughline { margin: 6px 0 0; padding: 20px 22px; max-width: none !important; background: var(--wall-lit); color: var(--on-wall); font-size: clamp(18px, 2.2vw, 24px) !important; font-weight: 600; line-height: 1.35 !important; letter-spacing: -0.02em; }
+  .about-throughline + p { margin-top: -10px; }
+  .about-timeline, .about-education { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
+  .about-timeline li, .about-education li { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .about-date { font-family: var(--mono); font-size: 13px; color: var(--about-muted); font-variant-numeric: tabular-nums; }
+  .about-entry { display: grid; gap: 6px; }
+  .about-entry strong { font-size: 17px; line-height: 1.35; }
+  .about-entry span, .about-entry p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--about-muted); }
+  .about-entry p { color: var(--ink); }
+  .about-focus { margin: -4px 0 0; font-size: 14px !important; font-weight: 600; color: var(--wall-lit); }
+  .about-toolkit { margin: 0; display: grid; gap: 0; }
+  .about-toolkit div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; padding: 15px 0; }
+  .about-toolkit dt { font-size: 14px; color: var(--about-muted); }
+  .about-toolkit dd { margin: 0; font-size: 15px; line-height: 1.6; font-weight: 500; }
+  .recognition-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.6; }
+  .recognition-table caption { text-align: left; padding-bottom: 14px; font-size: 18px; font-weight: 700; }
+  .recognition-table th, .recognition-table td { padding: 12px 0; vertical-align: top; text-align: left; }
+  .recognition-table th { width: 96px; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--about-muted); }
+  .recognition-table td { font-weight: 500; }
+  #about.is-active .about-reveal { animation: about-reveal .52s cubic-bezier(.2,.8,.2,1) both; }
+  #about.is-active .about-reveal:nth-child(2) { animation-delay: .05s; }
+  #about.is-active .about-reveal:nth-child(3) { animation-delay: .1s; }
+  #about.is-active .about-reveal:nth-child(4) { animation-delay: .15s; }
+  #about.is-active .about-reveal:nth-child(5) { animation-delay: .2s; }
+  @keyframes about-reveal { from { opacity: 0; transform: translateY(18px); } }
 
   /* 联系页 */
   .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; padding: 7px 12px; background: rgba(31, 138, 91, 0.1); color: var(--ok); width: fit-content; }
@@ -211,7 +310,6 @@
 
   .intro-scroll { height: 100%; overflow-y: auto; box-sizing: border-box; padding-block: clamp(28px, 6vh, 72px); padding-left: max(24px, env(safe-area-inset-left, 0px), 6vw); padding-right: max(24px, env(safe-area-inset-right, 0px), 6vw); display: grid; align-content: start; gap: 40px; cursor: auto; }
   .vi-head { display: grid; gap: 12px; }
-  .vi-no { font-family: var(--mono); font-size: 13px; color: var(--v-accent); }
   .vi-title { margin: 0; font-size: clamp(40px, 7vw, 104px); font-weight: 700; line-height: 0.95; letter-spacing: -0.035em; text-wrap: balance; }
   .vi-sub { margin: 0; font-size: clamp(16px, 1.6vw, 20px); color: var(--v-soft); }
   .vi-meta { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, max-content)); gap: 12px 48px; padding-block: 18px; border-top: 1px solid var(--v-line); border-bottom: 1px solid var(--v-line); }
@@ -248,6 +346,10 @@
   }
   @media (max-width: 560px) {
     .nav { gap: 16px; font-size: 13px; }
+    .work-index { top: calc(var(--top) + 34px); width: calc(100vw - 24px); right: 12px; height: min(80dvh, calc(100dvh - var(--top) - 46px)); padding: 18px; }
+    .work-index-head { margin-bottom: 14px; }
+    .work-index-list a { grid-template-columns: 30px minmax(0, 1fr); gap: 9px; padding: 10px 0; }
+    .work-index-category { grid-column: 2; justify-self: start; max-width: none; margin-top: -4px; font-size: 10px; }
     .id-role { font-size: 11px; }
     .tally strong { font-size: 30px; }
     .lede { max-width: calc(100vw - 120px); }
@@ -267,9 +369,19 @@
     .vi-desc { grid-template-columns: 1fr; gap: 28px; }
     .v-progress { display: none; }
     .v-bar, .v-foot { gap: 10px; }
+    .about-hero { grid-template-columns: 1fr; }
+    .about-portrait { width: min(62vw, 230px); }
+    .about-hero h1 { font-size: 28px; }
+    .about-capabilities { grid-template-columns: 1fr; gap: 24px; }
+    .about-timeline li, .about-education li, .about-toolkit div { grid-template-columns: 1fr; gap: 5px; }
+    .about-letter { padding: 24px; }
+    .contact-hero h1 { font-size: 34px; }
+    .contact-letter { padding: 24px; }
+    .contact-links li { grid-template-columns: 1fr; gap: 8px; }
+    .contact-links a { text-align: left; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .card, .status::before { animation: none; }
+    .card, .status::before, #about.is-active .about-reveal { animation: none; }
     .lede, .tally, .sheet, .scrim, .viewer, .v-progress i { transition: none; }
   }
 </style>
@@ -288,12 +400,21 @@
   <div class="loader" id="loader">正在揉纸团…</div>
 
   <header class="hud id">
-    <h1 class="id-name"><a href="#work">Songyue Zhao</a></h1>
+    <p class="id-name"><a href="#work">Songyue Zhao</a></p>
     <span class="id-role">Brand / Visual / Digital</span>
   </header>
 
   <nav class="hud nav" aria-label="主导航">
-    <a href="#work" data-route="work" aria-current="page">作品</a>
+    <div class="work-index-control">
+      <button class="nav-work" id="work-index-trigger" type="button" aria-expanded="false" aria-controls="work-index">作品<span class="nav-work-mark" aria-hidden="true">+</span></button>
+      <section class="work-index" id="work-index" aria-labelledby="work-index-title" hidden>
+        <div class="work-index-head">
+          <h2 id="work-index-title">Index</h2>
+          <span class="work-index-count" id="work-index-count">11 PROJECTS</span>
+        </div>
+        <ul class="work-index-list" id="work-index-list"></ul>
+      </section>
+    </div>
     <a href="#about" data-route="about">关于</a>
     <a href="#contact" data-route="contact">联系</a>
   </nav>
@@ -332,51 +453,96 @@
   <!-- ==================== 关于 ==================== -->
   <article class="sheet" id="about" aria-labelledby="about-title" tabindex="-1">
     <div class="sheet-inner">
-      <section class="intro">
-        <div class="intro-text">
-          <div>
-            <div class="eyebrow">About · 关于</div>
-            <h2 id="about-title">你好，我是 Songyue Zhao。</h2>
-          </div>
-          <p><span class="ph">一段 2–3 句的自我介绍：你是做什么的、做了多少年、关注什么问题。比如：独立设计师与前端开发者，过去 6 年为品牌和科技公司做网站、交互和视觉系统。</span></p>
-          <p class="muted"><span class="ph">第二段可以写工作方式或个人兴趣：喜欢把设计直接做成能跑的代码，也喜欢在纸上先画很多草图。</span></p>
+      <section class="about-hero about-reveal">
+        <div class="about-hero-copy">
+          <h1 id="about-title">你好，我是 Songyue Zhao。</h1>
+          <p class="about-deck">在品牌与数字世界之间，探索设计的更多可能。</p>
+          <p class="about-role">Brand Designer / Visual Thinker / Digital Explorer</p>
         </div>
-        <div class="portrait" role="img" aria-label="头像占位">头像占位<br />4 : 5</div>
+        <figure class="about-portrait">
+          <img src="assets/about/songyue-zhao.jpg" width="1280" height="1600" alt="Songyue Zhao 的肖像" fetchpriority="high" decoding="async" />
+        </figure>
       </section>
 
-      <section class="block" aria-labelledby="exp-title">
-        <h3 class="block-title" id="exp-title">经历 <span>Experience</span></h3>
-        <ul class="rows">
-          <li><span class="when">2024 — 至今</span><span class="what">独立设计师 / 开发者<small>自由职业，承接品牌与网站项目</small></span><span class="tag">城市</span></li>
-          <li><span class="when">2021 — 2024</span><span class="what">高级交互设计师<small>公司名称 · 负责的产品或团队</small></span><span class="tag">城市</span></li>
-          <li><span class="when">2019 — 2021</span><span class="what">视觉设计师<small>公司名称 · 负责的产品或团队</small></span><span class="tag">城市</span></li>
-          <li><span class="when">2015 — 2019</span><span class="what">学校名称<small>专业 · 学位</small></span><span class="tag">城市</span></li>
+      <section class="about-letter about-reveal" aria-labelledby="about-letter-title">
+        <h2 id="about-letter-title">关于我</h2>
+        <p>我是一名专注于品牌视觉与数字体验的设计师，毕业于伦敦艺术大学伦敦传媒学院，拥有图形品牌与标识设计硕士学位。</p>
+        <p>目前深耕 AI 科技领域，曾负责多个国际化科技品牌的视觉设计与系统延展，涵盖品牌识别、营销传播、国际展会及数字产品体验。</p>
+        <p>我热衷于将复杂的信息转化为清晰且有吸引力的视觉表达，也在不断探索设计与技术的结合，通过 AI 与 Vibe Coding，让创意从视觉概念延伸为真实、可交互的数字体验。</p>
+        <h3 lang="en">About Me</h3>
+        <p lang="en">I'm Songyue Zhao, a designer working at the intersection of brand identity, visual communication, and digital experiences. I hold an MA in Graphic Branding and Identity from the London College of Communication, University of the Arts London.</p>
+        <p lang="en">My work focuses on the AI and technology sector, spanning visual identity systems, global brand communications, international exhibitions, and digital interfaces.</p>
+        <p lang="en">I'm interested in turning complex ideas into clear, engaging visual experiences. Through AI-assisted workflows and Vibe Coding, I continue to explore new ways to bring design concepts into interactive, functional experiences.</p>
+      </section>
+
+      <section class="about-section about-reveal" aria-labelledby="capability-title">
+        <div class="about-section-heading">
+          <h2 id="capability-title">专业领域</h2>
+          <p>从品牌策略、视觉系统到数字体验与创意技术，建立完整而连贯的设计表达。</p>
+        </div>
+        <ul class="about-capabilities">
+          <li><strong>Brand Identity</strong><span>品牌识别与视觉系统。品牌策略、视觉识别、品牌规范、组件化资产管理及多品牌视觉系统建设。</span></li>
+          <li><strong>Visual Communication</strong><span>视觉传播与叙事。营销视觉、国际展会、信息可视化、动态视觉及跨文化品牌传播。</span></li>
+          <li><strong>Digital Experience</strong><span>数字体验与交互设计。网站设计、UI 视觉、交互原型、响应式布局及数字产品体验优化。</span></li>
+          <li><strong>Creative Technology</strong><span>创意技术与 AI 工作流。AI 辅助设计、Vibe Coding、交互原型开发及设计与代码的协同实现。</span></li>
+        </ul>
+        <p class="about-throughline">Brand → Visual → Digital → Technology</p>
+      </section>
+
+      <section class="about-section about-reveal" aria-labelledby="experience-title">
+        <div class="about-section-heading">
+          <h2 id="experience-title">工作经历</h2>
+          <p>聚焦多品牌、国际化与数字体验的视觉设计实践。</p>
+        </div>
+        <ul class="about-timeline">
+          <li>
+            <span class="about-date">2025.07 — 至今</span>
+            <div class="about-entry"><strong>品牌视觉 / UI 设计师</strong><span>整数智能 · MolarData Intelligence</span><p>负责 Abaka AI、2077AI、REX、ZODA 及整数智能等品牌的视觉设计与数字体验项目，涵盖品牌系统建设、全球营销传播、国际展会及官网优化，推动设计从单次视觉交付向可复用的品牌资产与数字界面延伸。</p></div>
+          </li>
+          <li>
+            <span class="about-date">2022</span>
+            <div class="about-entry"><strong>平面设计实习生</strong><span>青岛广视文化传媒有限公司</span><p>参与胶南一中历史博物馆视觉设计项目，与跨专业团队协作，将平面视觉元素融入展览空间与信息叙事。</p></div>
+          </li>
+          <li>
+            <span class="about-date">2020</span>
+            <div class="about-entry"><strong>美术助教</strong><span>青岛天艺画室</span><p>协助美术教学与课程组织，积累视觉表达、沟通协作与教学支持经验。</p></div>
+          </li>
+        </ul>
+        <p class="about-focus">Brand Design · UI Design · Global Marketing · Creative Technology</p>
+      </section>
+
+      <section class="about-section about-reveal" aria-labelledby="education-title">
+        <div class="about-section-heading">
+          <h2 id="education-title">教育背景</h2>
+          <p>国际化设计教育经历，贯穿品牌、标识与视觉传达。</p>
+        </div>
+        <ul class="about-education">
+          <li><span class="about-date">2023 — 2025</span><div class="about-entry"><strong>University of the Arts London</strong><span>London College of Communication</span><span>MA Graphic Branding and Identity</span><p>伦敦艺术大学 · 伦敦传媒学院｜图形品牌与标识硕士</p></div></li>
+          <li><span class="about-date">2019 — 2023</span><div class="about-entry"><strong>University of Southampton</strong><span>Dalian Polytechnic University · 2+2 Dual Degree Programme</span><span>BA Graphic Arts: Graphic Design</span><p>南安普顿大学 / 大连工业大学｜平面设计本科 · 2+2 双学位项目</p></div></li>
         </ul>
       </section>
 
-      <section class="block" aria-labelledby="skill-title">
-        <h3 class="block-title" id="skill-title">擅长 <span>Capabilities</span></h3>
-        <ul class="chips">
-          <li>品牌视觉</li><li>网站设计</li><li>交互动效</li><li>设计系统</li>
-          <li>WebGL / Three.js</li><li>前端开发</li><li>数据可视化</li><li>插画</li>
-        </ul>
-      </section>
-
-      <section class="block" aria-labelledby="client-title">
-        <h3 class="block-title" id="client-title">合作过的客户 <span>Clients</span></h3>
-        <ul class="clients">
-          <li>客户 A</li><li>客户 B</li><li>客户 C</li><li>客户 D</li>
-          <li>客户 E</li><li>客户 F</li><li>客户 G</li><li>客户 H</li>
-        </ul>
-      </section>
-
-      <section class="block" aria-labelledby="award-title">
-        <h3 class="block-title" id="award-title">荣誉与分享 <span>Recognition</span></h3>
-        <ul class="rows">
-          <li><span class="when">2026</span><span class="what">奖项或评选名称<small>获奖项目名称</small></span><span class="tag">获奖</span></li>
-          <li><span class="when">2025</span><span class="what">演讲或分享的活动名<small>分享主题</small></span><span class="tag">演讲</span></li>
-          <li><span class="when">2024</span><span class="what">媒体或网站名称<small>被报道或收录的项目</small></span><span class="tag">报道</span></li>
-        </ul>
+      <section class="about-section about-reveal" aria-labelledby="toolkit-title">
+        <div class="about-section-heading">
+          <h2 id="toolkit-title">工具与荣誉</h2>
+          <p>以设计工具、AI 工作流与交互原型能力，将概念转化为可体验的数字成果。</p>
+        </div>
+        <dl class="about-toolkit">
+          <div><dt>Design</dt><dd>Figma / Illustrator / Photoshop / InDesign / After Effects</dd></div>
+          <div><dt>Digital &amp; AI</dt><dd>Vibe Coding / AI-Assisted Design / Interactive Prototyping</dd></div>
+          <div><dt>Expertise</dt><dd>Brand Systems / UI Design / Visual Storytelling / Data Visualization</dd></div>
+          <div><dt>Languages</dt><dd>Chinese (Native) / English (Professional)</dd></div>
+        </dl>
+        <table class="recognition-table">
+          <caption>Selected Recognition &amp; Projects</caption>
+          <thead><tr><th scope="col">年份</th><th scope="col">荣誉 / 项目</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">2026</th><td>杭州市职工经济技术创新能手</td></tr>
+            <tr><th scope="row">2025</th><td>“数据要素×”大赛浙江分赛杭州站决赛科技创新赛道一等奖（所在项目）</td></tr>
+            <tr><th scope="row">2024</th><td>D&amp;AD New Blood Awards — Universal Music UK 项目参与</td></tr>
+            <tr><th scope="row">2024</th><td>UNESCO × The Ocean Decade — 品牌设计竞赛项目参与</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <a class="next" href="#contact">有项目想聊？<span>去联系页 →</span></a>
@@ -386,49 +552,40 @@
   <!-- ==================== 联系 ==================== -->
   <article class="sheet" id="contact" aria-labelledby="contact-title" tabindex="-1">
     <div class="sheet-inner">
-      <section class="intro-text">
-        <div>
-          <div class="eyebrow">Contact · 联系</div>
-          <h2 id="contact-title">一起做点什么吧。</h2>
-        </div>
-        <span class="status">目前可以接新项目 · <span class="ph">2027 年 1 月起</span></span>
-        <p>项目合作、全职机会，或者只是想聊聊，都可以写邮件给我。一般会在两个工作日内回复。</p>
+      <section class="contact-hero">
+        <p class="contact-mark">Contact / 联系</p>
+        <h1 id="contact-title">下一个想法，<br />从这里开始。</h1>
+        <p class="contact-deck" lang="en">The next idea starts here.</p>
       </section>
 
-      <section class="mail" aria-label="邮箱">
-        <span class="mail-label">EMAIL</span>
+      <section class="contact-letter" aria-labelledby="contact-letter-title">
+        <p class="contact-opening" id="contact-letter-title">很高兴你能看到这里！</p>
+        <p>无论是设计交流、创意合作，还是新的职业机会，都欢迎与我联系。</p>
+        <p>我始终对有趣的想法和未知的可能保持好奇。也许，下一个值得展开的故事，就从一封邮件开始。</p>
+        <p class="contact-opening" lang="en">Glad you made it this far!</p>
+        <p lang="en">Whether it's a creative collaboration, a design conversation, or a new opportunity, I'd love to hear from you.</p>
+        <p lang="en">I'm always curious about fresh perspectives and unexpected possibilities. Maybe the next great idea starts with a simple hello.</p>
+      </section>
+
+      <section class="mail" aria-labelledby="mail-title">
+        <span class="mail-label">DROP ME A LINE</span>
+        <h2 class="mail-title" id="mail-title">Let's talk ideas.</h2>
         <span class="mail-addr" id="mail-addr">oldmoonzz@163.com</span>
         <div class="mail-actions">
           <button class="btn" id="copy-mail" type="button">复制邮箱</button>
-          <a class="btn btn-ghost" id="mail-link" href="mailto:oldmoonzz@163.com">用邮件客户端打开</a>
+          <a class="btn btn-ghost" id="mail-link" href="mailto:oldmoonzz@163.com">发送邮件</a>
         </div>
+        <p class="mail-footer">OPEN TO CONVERSATIONS &amp; NEW OPPORTUNITIES</p>
       </section>
 
-      <dl class="facts">
-        <div><dt>所在地</dt><dd><span class="ph">城市，国家</span></dd></div>
-        <div><dt>我这边现在是</dt><dd id="local-time">--:--</dd></div>
-        <div><dt>通常回复时间</dt><dd>2 个工作日内</dd></div>
-      </dl>
-
-      <section class="block" aria-labelledby="social-title">
-        <h3 class="block-title" id="social-title">其他地方找到我 <span>Elsewhere</span></h3>
-        <ul class="rows links">
-          <li><span class="when">微信</span><span class="what">your-wechat-id<small>添加时请备注来意</small></span><span class="arrow"></span></li>
-          <li><span class="when">小红书</span><a class="what" href="#" target="_blank" rel="noopener">@你的账号</a><span class="arrow">↗</span></li>
-          <li><span class="when">Behance</span><a class="what" href="#" target="_blank" rel="noopener">behance.net/yourname</a><span class="arrow">↗</span></li>
-          <li><span class="when">Dribbble</span><a class="what" href="#" target="_blank" rel="noopener">dribbble.com/yourname</a><span class="arrow">↗</span></li>
-          <li><span class="when">GitHub</span><a class="what" href="#" target="_blank" rel="noopener">github.com/yourname</a><span class="arrow">↗</span></li>
-          <li><span class="when">简历</span><a class="what" href="#" target="_blank" rel="noopener">下载 PDF 简历</a><span class="arrow">↗</span></li>
+      <section class="contact-elsewhere" aria-labelledby="social-title">
+        <div class="contact-section-heading">
+          <h2 id="social-title">其他平台</h2>
+        </div>
+        <ul class="contact-links">
+          <li><div><strong>Email</strong><span>主要联系方式</span></div><a href="mailto:oldmoonzz@163.com">oldmoonzz@163.com</a></li>
+          <li><div><strong>LinkedIn</strong><span>职业经历与专业交流</span></div><a href="https://www.linkedin.com/in/songyue-z-a3673a372" target="_blank" rel="noopener noreferrer">访问 LinkedIn ↗</a></li>
         </ul>
-      </section>
-
-      <section class="block" aria-labelledby="brief-title">
-        <h3 class="block-title" id="brief-title">发邮件时可以带上 <span>Brief</span></h3>
-        <ol class="steps">
-          <li><span><b>你是谁</b>：公司或团队，以及你负责的部分。</span></li>
-          <li><span><b>要做什么</b>：网站、品牌、动效还是其他，有参考链接更好。</span></li>
-          <li><span><b>时间和预算</b>：期望上线时间，以及大致的预算范围。</span></li>
-        </ol>
       </section>
 
       <a class="next" href="#work">回到作品<span>看看纸团 →</span></a>
@@ -454,9 +611,9 @@
     </footer>
   </div>
 
-  <script src="./src/projects.js?v=895e9db"></script>
-  <script src="./src/pages.js?v=895e9db"></script>
-  <script src="./src/viewer.js?v=895e9db"></script>
+  <script src="./src/projects.js?v=20261102-categories"></script>
+  <script src="./src/pages.js?v=20261102-index"></script>
+  <script src="./src/viewer.js?v=20261102-index"></script>
   <script type="module" src="./src/main.js?v=895e9db"></script>
 </body>
 </html>
