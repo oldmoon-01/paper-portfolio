@@ -24,6 +24,14 @@ window.ProjectViewer = (function () {
   function build(i) {
     project = PROJECTS[i];
     const d = project.description || {};
+    const videoLinks = (project.videoLinks || []).filter((item) => item && item.label && item.url);
+    const videoGroups = videoLinks.reduce((groups, item) => {
+      const brand = item.brand || "Videos";
+      const group = groups.find((entry) => entry.brand === brand);
+      if (group) group.items.push(item);
+      else groups.push({ brand, items: [item] });
+      return groups;
+    }, []);
     const meta = [
       ["类别", project.category],
       ["背景", project.brief],
@@ -44,6 +52,17 @@ window.ProjectViewer = (function () {
             ${d.en ? `<div lang="en">${d.en.map(para).join("")}</div>` : ""}
             ${d.zh ? `<div lang="zh-CN">${d.zh.map(para).join("")}</div>` : ""}
           </div>
+          ${videoLinks.length ? `
+            <section class="vi-video-links" aria-labelledby="video-links-title">
+              <h3 class="vi-video-title" id="video-links-title">Watch the videos</h3>
+              ${videoGroups.map((group, groupIndex) => `
+                <section class="vi-video-group" aria-labelledby="video-group-${i}-${groupIndex}">
+                  <h4 class="vi-video-brand" id="video-group-${i}-${groupIndex}">${esc(group.brand)}</h4>
+                  <div class="vi-video-list">
+                    ${group.items.map((item) => `<a class="vi-video-link" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.label)} <span aria-hidden="true">↗</span></a>`).join("")}
+                  </div>
+                </section>`).join("")}
+            </section>` : ""}
           <div class="vi-actions">
             <button class="vi-start" type="button" data-go="1">${project.gallery.length > 1 ? "向左滑动看作品 →" : "查看作品 →"}</button>
             ${project.site ? `<a class="vi-site" href="${esc(project.site)}" target="_blank" rel="noopener">访问网站 ${esc(project.site.replace(/^https?:\/\//, ""))} ↗</a>` : ""}

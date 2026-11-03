@@ -50,8 +50,8 @@
   window.addEventListener("hashchange", route);
   route();
 
-  // 作品目录：展示前 11 个已有项目；第 12 个占位项目暂不进入目录。
-  const projectIndex = (window.PROJECTS || []).slice(0, 11);
+  // 作品目录：所有已具备图集的项目都会显示在这里。
+  const projectIndex = (window.PROJECTS || []).filter((project) => project.gallery && project.gallery.length);
   const pad2 = (n) => String(n).padStart(2, "0");
   const escapeHtml = (value) => String(value).replace(/[&<>\"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char]);
   indexCount.textContent = `${pad2(projectIndex.length)} PROJECTS`;

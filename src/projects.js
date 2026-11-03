@@ -282,5 +282,31 @@ window.PROJECTS = [
       ],
     },
   },
-  { title: "项目标题 12", en: "PROJECT TWELVE", category: "Experimental Project",   year: 2021, summary: "一句话介绍这个项目：做了什么、为谁做、结果如何。", link: "", image: "", color: "#b5179e" },
+  {
+    title: "Corporate Promotional Video",
+    en: "企业品牌宣传视频",
+    category: "Motion Design",
+    year: "",
+    summary: "为 Abaka AI 与 REX 制作四支企业品牌宣传视频，将复杂 AI 技术转化为清晰、生动的动态叙事。",
+    link: "",
+    color: "#111214",
+    deliverables: ["Motion Typography", "Animated Graphics", "Information Visualization", "Video Production"],
+    videoLinks: [
+      { brand: "Abaka AI", label: "Off-the-Shelf Datasets", url: "https://youtu.be/V0Y0XJ23_2A" },
+      { brand: "Abaka AI", label: "Company Introduction", url: "https://youtu.be/2_zFPDgmGG4" },
+      { brand: "Abaka AI", label: "Model Evaluation", url: "https://youtu.be/hT-rTQYG-z4" },
+      { brand: "REX", label: "Platform Introduction", url: "https://youtu.be/sRZ5TdPKp0g" },
+    ],
+    gallery: [
+      { src: "assets/projects/corporate-promotional-videos/01.webp", caption: "Abaka AI & REX 企业品牌宣传视频 · Corporate promotional videos" },
+    ],
+    description: {
+      en: [
+        "Led the visual design and production of four promotional videos for Abaka AI and REX, covering corporate introductions, off-the-shelf datasets, model evaluation, and platform capabilities. Combined motion typography, animated graphics, information visualization, and cohesive brand elements to translate complex AI technologies into clear and engaging visual narratives. Extended both brands' visual identities into motion, enhancing the accessibility of technical content and strengthening brand consistency across digital communications.",
+      ],
+      zh: [
+        "负责 Abaka AI 与 REX 品牌系列宣传视频的视觉设计与制作，围绕企业品牌定位、核心业务及产品服务，将复杂的 AI 技术信息转化为清晰、生动的动态视觉叙事。通过动态排版、图形动画、信息可视化与品牌视觉语言的结合，制作涵盖企业介绍、现成数据集、模型评测及平台介绍的四支宣传视频。确保品牌形象在动态媒介中的一致性，并提升技术内容的可理解性与传播吸引力。",
+      ],
+    },
+  },
 ];
