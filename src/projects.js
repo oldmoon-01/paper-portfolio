@@ -178,6 +178,9 @@ window.PROJECTS = [
     year: "",
     summary: "主导 Abaka AI 品牌视觉系统的拓展，覆盖社交媒体、国际展会与品牌周边。",
     link: "",
+    links: [
+      { label: "查看 LinkedIn 帖子", url: "https://tinyurl.com/4cdnjt23" },
+    ],
     color: "#ff5a1f",
     deliverables: ["社交媒体视觉", "海报、折页与易拉宝", "展位设计", "品牌周边"],
     gallery: [
@@ -248,6 +251,9 @@ window.PROJECTS = [
     year: "",
     summary: "整数智能品牌视觉在行业展会、品牌推广、校园招聘与企业宣传中的拓展应用。",
     link: "",
+    links: [
+      { label: "查看 LinkedIn 帖子", url: "https://tinyurl.com/mr2cdp4c" },
+    ],
     color: "#1e1a4a",
     deliverables: ["展会主视觉", "宣讲会物料", "宣传折页", "企业宣传"],
     gallery: [
