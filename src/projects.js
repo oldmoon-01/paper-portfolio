@@ -224,6 +224,9 @@ window.PROJECTS = [
     year: "",
     summary: "以美元纸币为灵感的 REX 创意推广物料，用于 CES 2026 线下推广。",
     link: "",
+    links: [
+      { label: "查看 LinkedIn 帖子", url: "https://tinyurl.com/ans72vsy" },
+    ],
     color: "#4d6b4f",
     deliverables: ["创意推广物料", "纸币视觉设计", "互动二维码"],
     gallery: [

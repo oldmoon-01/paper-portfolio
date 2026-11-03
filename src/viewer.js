@@ -25,6 +25,7 @@ window.ProjectViewer = (function () {
     project = PROJECTS[i];
     const d = project.description || {};
     const videoLinks = (project.videoLinks || []).filter((item) => item && item.label && item.url);
+    const links = (project.links || []).filter((item) => item && item.label && item.url);
     const videoGroups = videoLinks.reduce((groups, item) => {
       const brand = item.brand || "Videos";
       const group = groups.find((entry) => entry.brand === brand);
@@ -66,6 +67,7 @@ window.ProjectViewer = (function () {
           <div class="vi-actions">
             <button class="vi-start" type="button" data-go="1">${project.gallery.length > 1 ? "向左滑动看作品 →" : "查看作品 →"}</button>
             ${project.site ? `<a class="vi-site" href="${esc(project.site)}" target="_blank" rel="noopener">访问网站 ${esc(project.site.replace(/^https?:\/\//, ""))} ↗</a>` : ""}
+            ${links.map((item) => `<a class="vi-site" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(item.label)}（在新标签页打开）">${esc(item.label)} <span aria-hidden="true">↗</span></a>`).join("")}
           </div>
         </div>
       </section>`;
