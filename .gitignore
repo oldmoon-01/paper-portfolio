@@ -1,6 +1,7 @@
 .DS_Store
 .taste-skill/
 .web-shader-extractor/
+.wrangler/
 app.js
 styles.css
 accessibility-palette.json
