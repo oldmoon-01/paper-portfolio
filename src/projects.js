@@ -274,20 +274,22 @@ window.PROJECTS = [
     en: "品牌视觉与社区官网",
     category: "Brand / Web Experience",
     year: "",
-    summary: "ZODA 品牌视觉体系与社区官网升级：深色科技美学、动态地球与模块化布局。",
+    summary: "为 ZODA 构建品牌视觉识别指南与社区官网体验，统一品牌表达与数字化触点。",
     link: "",
     site: "https://zoda.zone",
     color: "#2a2550",
-    deliverables: ["品牌视觉规范", "社区官网设计", "动态交互"],
+    deliverables: ["品牌视觉规范", "标志与图标系统", "色彩与字体系统", "官网体验设计"],
     gallery: [
       { src: "assets/projects/zoda/01.webp", caption: "ZODA 社区官网 · Community website" },
+      { src: "assets/projects/zoda/02.webp", caption: "品牌视觉识别指南 · Brand identity guidelines" },
+      { src: "assets/projects/zoda/03.webp", caption: "品牌规范细节：字体、图标与应用 · Typography, iconography & applications" },
     ],
     description: {
       en: [
-        "Led the development of ZODA's visual identity system and the ongoing redesign of its community website, centered on open data, AI infrastructure, and a global network of experts. Combined a dark, technology-driven aesthetic with an interactive 3D globe, immersive visual elements, and modular content layouts to create an engaging digital experience. Through brand guideline development, interface refinement, and motion-driven interactions, translated complex technical concepts into clear and compelling digital narratives, strengthening brand recognition, usability, and visual consistency.",
+        "Led the development of ZODA's brand identity guidelines and community website experience, translating its values of openness, rigor, and collaboration into a cohesive visual system. Established standards for logo usage, colour, typography, layouts, iconography, and digital applications, then extended them into a clear, immersive website experience through structured information architecture, modular content layouts, and motion-led interactions. The work ensures brand consistency and recognition across global touchpoints.",
       ],
       zh: [
-        "负责 ZODA 品牌视觉体系的搭建与官网的优化升级，围绕开放数据、AI 基础设施与全球专家社区的品牌定位，构建兼具未来感与专业性的数字视觉体验。以深色科技美学为基础，结合动态地球、三维视觉元素与模块化信息布局，打造具有沉浸感和探索性的交互界面。通过品牌视觉规范的梳理、网页结构优化及动态交互设计，将复杂的技术内容转化为清晰、直观且富有吸引力的数字叙事，提升品牌识别度、用户体验与整体视觉一致性。",
+        "负责制定 ZODA 品牌视觉识别指南与社区官网体验，将开放、严谨与共创的品牌价值转化为完整且可延展的视觉系统。围绕标志使用、色彩、字体、版式、图标与数字化应用建立规范，并将其延伸至官网的信息架构、模块化内容布局与动态交互体验，打造清晰、沉浸且易于探索的数字触点，确保品牌在全球传播场景中的一致性与识别度。",
       ],
     },
   },
