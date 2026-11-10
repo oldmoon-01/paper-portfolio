@@ -252,13 +252,15 @@ window.PROJECTS = [
     summary: "整数智能品牌视觉在行业展会、品牌推广、校园招聘与企业宣传中的拓展应用。",
     link: "",
     links: [
-      { label: "查看公众号动态", url: "https://tinyurl.com/mr2cdp4c" },
+      { label: "查看校招动态", url: "https://tinyurl.com/mr2cdp4c" },
+      { label: "查看春泥计划", url: "https://mp.weixin.qq.com/s/t2EJsDPgYWxGUzkZ77NoRw" },
     ],
     color: "#1e1a4a",
     deliverables: ["展会主视觉", "宣讲会物料", "宣传折页", "企业宣传"],
     gallery: [
       { src: "assets/projects/molardata/01.webp", caption: "校园招聘与商务活动物料 · Business event materials" },
       { src: "assets/projects/molardata/02.webp", caption: "全球数字贸易博览会主视觉 · GDTE backdrop" },
+      { src: "assets/projects/molardata/03.webp", caption: "春泥计划 H5 体验设计 · Spring Soil Initiative" },
     ],
     description: {
       en: [
