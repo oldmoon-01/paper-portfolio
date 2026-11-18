@@ -12,10 +12,13 @@ window.PROJECTS = [
   {
     title: "Stay Wise, Stay True",
     en: "保持理智，保持真实",
-    category: "Social Campaign",
+    category: "Social Campaign / Web",
     year: "",
     summary: "帮助年轻人识别社交媒体上的假新闻，包含 Instagram 账号与网站设计。",
     link: "",
+    links: [
+      { label: "查看网站视频", url: "https://youtu.be/QHvJH_d4Isc?si=2De0D4xaoO3J2oOz" },
+    ],
     color: "#111214",
     deliverables: ["Instagram 账号", "网站设计", "字体与视觉系统"],
     // 展开后滑动浏览的图片（按顺序）

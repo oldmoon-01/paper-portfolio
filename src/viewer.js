@@ -146,23 +146,6 @@ window.ProjectViewer = (function () {
     else if (e.key === "ArrowLeft") { e.preventDefault(); go(cur - 1); }
   });
 
-  // 竖向滚轮 → 翻页（介绍页文字还能往下滚时先滚文字）
-  let wheelLock = 0;
-  track.addEventListener("wheel", (e) => {
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // 横向手势交给原生滚动
-    const scroller = e.target.closest(".intro-scroll");
-    if (scroller) {
-      const canDown = scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 2;
-      const canUp = scroller.scrollTop > 0;
-      if ((e.deltaY > 0 && canDown) || (e.deltaY < 0 && canUp)) return;
-    }
-    e.preventDefault();
-    const now = performance.now();
-    if (now < wheelLock || Math.abs(e.deltaY) < 4) return;
-    wheelLock = now + 650;
-    go(cur + (e.deltaY > 0 ? 1 : -1));
-  }, { passive: false });
-
   // 鼠标拖拽翻页
   let dragging = false, startX = 0, startLeft = 0;
   track.addEventListener("pointerdown", (e) => {
