@@ -146,6 +146,17 @@ window.ProjectViewer = (function () {
     else if (e.key === "ArrowLeft") { e.preventDefault(); go(cur - 1); }
   });
 
+  // 鼠标滚轮在图片页翻页；仅响应用户主动滚动，避免介绍页或惯性滚动误触。
+  let wheelLock = 0;
+  track.addEventListener("wheel", (e) => {
+    if (!e.target.closest(".slide-img") || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    e.preventDefault();
+    const now = performance.now();
+    if (now < wheelLock || Math.abs(e.deltaY) < 8) return;
+    wheelLock = now + 500;
+    go(cur + (e.deltaY > 0 ? 1 : -1));
+  }, { passive: false });
+
   // 鼠标拖拽翻页
   let dragging = false, startX = 0, startLeft = 0;
   track.addEventListener("pointerdown", (e) => {
