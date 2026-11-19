@@ -65,7 +65,7 @@ window.ProjectViewer = (function () {
                 </section>`).join("")}
             </section>` : ""}
           <div class="vi-actions">
-            <button class="vi-start" type="button" data-go="1">${project.gallery.length > 1 ? "向左滑动看作品 →" : "查看作品 →"}</button>
+            <button class="vi-start" type="button" data-go="1">${project.gallery.length > 1 ? "滑动或滚动看作品 →" : "查看作品 →"}</button>
             ${project.site ? `<a class="vi-site" href="${esc(project.site)}" target="_blank" rel="noopener">访问网站 ${esc(project.site.replace(/^https?:\/\//, ""))} ↗</a>` : ""}
             ${links.map((item) => `<a class="vi-site" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(item.label)}（在新标签页打开）">${esc(item.label)} <span aria-hidden="true">↗</span></a>`).join("")}
           </div>
@@ -146,10 +146,18 @@ window.ProjectViewer = (function () {
     else if (e.key === "ArrowLeft") { e.preventDefault(); go(cur - 1); }
   });
 
-  // 鼠标滚轮在图片页翻页；仅响应用户主动滚动，避免介绍页或惯性滚动误触。
+  // 鼠标滚轮可在图集内前后翻页；介绍页优先保留正文的纵向阅读。
   let wheelLock = 0;
   track.addEventListener("wheel", (e) => {
-    if (!e.target.closest(".slide-img") || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    const intro = e.target.closest(".intro-scroll");
+    if (intro) {
+      const canReadDown = intro.scrollTop + intro.clientHeight < intro.scrollHeight - 2;
+      const canReadUp = intro.scrollTop > 0;
+      if ((e.deltaY > 0 && canReadDown) || (e.deltaY < 0 && canReadUp)) return;
+    } else if (!e.target.closest(".slide-img")) {
+      return;
+    }
     e.preventDefault();
     const now = performance.now();
     if (now < wheelLock || Math.abs(e.deltaY) < 8) return;
