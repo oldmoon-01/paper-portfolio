@@ -373,8 +373,28 @@
     .nav { gap: 16px; font-size: 13px; }
     .work-index { top: calc(var(--top) + 34px); width: calc(100vw - 24px); right: 12px; height: min(80dvh, calc(100dvh - var(--top) - 46px)); padding: 18px; }
     .work-index-head { margin-bottom: 14px; }
-    .work-index-list a { grid-template-columns: 30px minmax(0, 1fr); gap: 9px; padding: 10px 0; }
-    .work-index-category { grid-column: 2; justify-self: end; min-height: 36px; margin-top: -4px; font-size: 10px; }
+    .work-index-list a {
+      grid-template-columns: 30px minmax(0, 1fr);
+      grid-template-areas:
+        "number title"
+        ". category";
+      column-gap: 9px;
+      row-gap: 8px;
+      align-items: start;
+      padding: 13px 0;
+    }
+    .work-index-no { grid-area: number; padding-top: 2px; }
+    .work-index-title { grid-area: title; }
+    .work-index-category {
+      grid-area: category;
+      justify-self: start;
+      justify-content: flex-start;
+      min-height: 34px;
+      margin: 0;
+      padding-inline: 10px;
+      font-size: 10px;
+      text-align: left;
+    }
     .id-role { font-size: 11px; }
     .tally strong { font-size: 30px; }
     .lede { max-width: calc(100vw - 120px); }
