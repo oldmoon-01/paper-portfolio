@@ -274,10 +274,9 @@ function drawPaper(state) {
 
   // 分类 + 简介
   ctx.fillStyle = INK;
-  ctx.font = `700 50px ${SANS}`;
-  ctx.fillText(`# ${project.category || ""}`, IMG.x, coverBottom + 100);
+  const categoryBottom = drawCategory(ctx, project.category || "", IMG.x, coverBottom + 100, IMG.w);
   ctx.font = `400 42px ${SANS}`;
-  wrapText(ctx, project.summary || "", IMG.x, coverBottom + 175, IMG.w, 64, 3);
+  wrapText(ctx, project.summary || "", IMG.x, categoryBottom + 75, IMG.w, 64, 3);
 
 
   state.texture.needsUpdate = true;
@@ -353,6 +352,36 @@ function fitText(ctx, text, family, max, min, width, x, y, weight = 400) {
     ctx.font = `${weight} ${size}px ${family}`;
   }
   ctx.fillText(text, x, y);
+}
+
+// 分类优先保持单行；超出纸面宽度时按词拆成两行，并留出稳定的阅读行距。
+function drawCategory(ctx, category, x, y, maxW) {
+  const words = (`# ${category}`).trim().split(/\s+/);
+  const font = (size) => `700 ${size}px ${SANS}`;
+  let size = 50;
+  let lines = [words.join(" ")];
+
+  ctx.font = font(size);
+  if (ctx.measureText(lines[0]).width > maxW && words.length > 1) {
+    let best = null;
+    for (let i = 1; i < words.length; i++) {
+      const first = words.slice(0, i).join(" ");
+      const second = words.slice(i).join(" ");
+      const width = Math.max(ctx.measureText(first).width, ctx.measureText(second).width);
+      if (!best || width < best.width) best = { first, second, width };
+    }
+    lines = [best.first, best.second];
+    while (best.width > maxW && size > 36) {
+      size -= 2;
+      ctx.font = font(size);
+      best.width = Math.max(ctx.measureText(best.first).width, ctx.measureText(best.second).width);
+    }
+  }
+
+  ctx.font = font(size);
+  const lineHeight = Math.round(size * 1.16);
+  lines.forEach((line, index) => ctx.fillText(line, x, y + index * lineHeight));
+  return y + (lines.length - 1) * lineHeight;
 }
 
 function wrapText(ctx, text, x, y, maxW, lineH, maxLines) {
