@@ -18,6 +18,7 @@ window.PROJECTS = [
     link: "",
     links: [
       { label: "查看网站视频", url: "https://youtu.be/QHvJH_d4Isc?si=2De0D4xaoO3J2oOz" },
+      { label: "查看 Instagram", url: "https://www.instagram.com/staywisestaytruecampaign?dmpr=MjgwNzZ5Nm56ZGl4" },
     ],
     color: "#111214",
     deliverables: ["Instagram 账号", "网站设计", "字体与视觉系统"],
