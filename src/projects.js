@@ -68,7 +68,7 @@ window.PROJECTS = [
     },
   },
   {
-    title: "CONSOLATION RETICULE",
+    title: "Consolation Reticule",
     en: "安慰手提袋",
     category: "Experimental Editorial",
     year: "",
@@ -94,7 +94,7 @@ window.PROJECTS = [
     },
   },
   {
-    title: "REAL SYMPTOM, FAKE PRESCRIPTION",
+    title: "Real Symptom, Fake Prescription",
     en: "真病症，伪药方",
     category: "Exhibition / Editorial",
     year: "",
@@ -124,7 +124,7 @@ window.PROJECTS = [
     },
   },
   {
-    title: "AUTUMN RUSH",
+    title: "Autumn Rush",
     en: "秋潮",
     category: "Music Festival Identity",
     brief: "D&AD Brief · Team Project",
