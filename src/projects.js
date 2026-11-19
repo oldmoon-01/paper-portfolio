@@ -44,7 +44,7 @@ window.PROJECTS = [
   {
     title: "Sunnyup",
     en: "种太阳",
-    category: "Packaging Design",
+    category: "Educational Kit / Packaging",
     year: "",
     summary: "让孩子在玩耍中提高创造力、激发感官能力的教育套装，鼓励他们尊重和保护自然。",
     link: "",
@@ -70,7 +70,7 @@ window.PROJECTS = [
   {
     title: "CONSOLATION RETICULE",
     en: "安慰手提袋",
-    category: "Editorial / Archive",
+    category: "Experimental Editorial",
     year: "",
     summary: "把疫情封控期间的日常、情绪与想象记录在手提袋上，分发物资时赠予邻居。",
     link: "",
@@ -96,7 +96,7 @@ window.PROJECTS = [
   {
     title: "REAL SYMPTOM, FAKE PRESCRIPTION",
     en: "真病症，伪药方",
-    category: "Exhibition Design",
+    category: "Exhibition / Editorial",
     year: "",
     summary: "与观众共同完成的项目：在药盒里写下让你不适的症状，和能治愈你的专属“药方”。",
     link: "",
