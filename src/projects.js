@@ -152,7 +152,7 @@ window.PROJECTS = [
   {
     title: "SEAFRONT",
     en: "临海露营",
-    category: "Brand Identity",
+    category: "Brand Identity / Visual Communication",
     year: "",
     summary: "把豪华露营与艺术活动结合，为城市年轻人重新定义露营品牌。",
     link: "",
@@ -178,7 +178,7 @@ window.PROJECTS = [
   {
     title: "Abaka AI",
     en: "品牌视觉系统拓展",
-    category: "Brand Communications",
+    category: "Brand Communication / Event Design",
     year: "",
     summary: "主导 Abaka AI 品牌视觉系统的拓展，覆盖社交媒体、国际展会与品牌周边。",
     link: "",
@@ -205,7 +205,7 @@ window.PROJECTS = [
   {
     title: "2077AI",
     en: "品牌视觉系统拓展",
-    category: "Visual Identity",
+    category: "Brand Communication / Research Visuals",
     year: "",
     summary: "以电光蓝、未来主义排版和等轴测图形，拓展 2077AI 及 2077 Ventures 的品牌视觉。",
     link: "",
@@ -227,7 +227,7 @@ window.PROJECTS = [
   {
     title: "REX",
     en: "REX Dollars",
-    category: "Creative Brand Collateral",
+    category: "Brand Identity / Promotional Design",
     year: "",
     summary: "以美元纸币为灵感的 REX 创意推广物料，用于 CES 2026 线下推广。",
     link: "",
@@ -249,9 +249,9 @@ window.PROJECTS = [
     },
   },
   {
-    title: "整数智能",
+    title: "Molardata Intelligence",
     en: "MolarData Intelligence",
-    category: "Brand Visual Design",
+    category: "Digital Experience / Brand Communication",
     year: "",
     summary: "整数智能品牌视觉在行业展会、品牌推广、校园招聘与企业宣传中的拓展应用。",
     link: "",
@@ -278,7 +278,7 @@ window.PROJECTS = [
   {
     title: "ZODA",
     en: "品牌视觉与社区官网",
-    category: "Brand / Web Experience",
+    category: "Website / UI Design",
     year: "",
     summary: "为 ZODA 构建品牌视觉识别指南与社区官网体验，统一品牌表达与数字化触点。",
     link: "",
