@@ -192,6 +192,8 @@ window.PROJECTS = [
       { src: "assets/projects/abaka-ai/02.webp", caption: "品牌周边：T 恤、名片与贴纸 · Merchandise" },
       { src: "assets/projects/abaka-ai/03.webp", caption: "活动现场物料 · Event materials" },
       { src: "assets/projects/abaka-ai/04.webp", caption: "CVPR 2026 展位设计 · Exhibition booth" },
+      { src: "assets/projects/abaka-ai/05.webp", caption: "品牌视觉规范 · Brand identity guidelines" },
+      { src: "assets/projects/abaka-ai/06.webp", caption: "品牌视觉规范 · Brand identity guidelines" },
     ],
     description: {
       en: [
