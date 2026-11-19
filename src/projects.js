@@ -294,6 +294,8 @@ window.PROJECTS = [
       { src: "assets/projects/zoda/01.webp", caption: "ZODA 社区官网 · Community website" },
       { src: "assets/projects/zoda/02.webp", caption: "品牌视觉识别指南 · Brand identity guidelines" },
       { src: "assets/projects/zoda/03.webp", caption: "品牌规范细节：字体、图标与应用 · Typography, iconography & applications" },
+      { src: "assets/projects/zoda/04.webp", caption: "品牌视觉识别指南 · Brand identity guidelines" },
+      { src: "assets/projects/zoda/05.webp", caption: "品牌视觉识别指南 · Brand identity guidelines" },
     ],
     description: {
       en: [
