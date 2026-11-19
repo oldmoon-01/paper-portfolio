@@ -50,8 +50,8 @@
   window.addEventListener("hashchange", route);
   route();
 
-  // 作品目录：所有已具备图集的项目都会显示在这里。
-  const projectIndex = (window.PROJECTS || []).filter((project) => project.gallery && project.gallery.length);
+  // 作品目录：已具备图集的项目与待补充素材的新项目都会显示在这里。
+  const projectIndex = (window.PROJECTS || []).filter((project) => (project.gallery && project.gallery.length) || project.placeholder);
   const pad2 = (n) => String(n).padStart(2, "0");
   const escapeHtml = (value) => String(value).replace(/[&<>\"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char]);
   indexCount.textContent = `${pad2(projectIndex.length)} PROJECTS`;
@@ -112,7 +112,11 @@
     event.preventDefault();
     const index = Number(link.dataset.projectIndex);
     closeIndex();
-    const openProject = () => window.ProjectViewer?.open(index);
+    const project = projectIndex[index];
+    const openProject = () => {
+      if (project?.gallery?.length) window.ProjectViewer?.open(index);
+      else window.PaperStage?.open(index);
+    };
     if (location.hash !== "#work") {
       location.hash = "work";
       requestAnimationFrame(openProject);

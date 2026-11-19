@@ -150,6 +150,33 @@ window.PROJECTS = [
     },
   },
   {
+    title: "Yappa",
+    en: "Yappa and Your Friends",
+    category: "Brand Identity / Character Design",
+    brief: "UNESCO Brief · Team Project",
+    year: "",
+    summary: "以深海生物角色 IP 为媒介，帮助儿童建立与海洋生态的情感连接与保护意识。",
+    link: "",
+    color: "#1775e7",
+    deliverables: ["品牌策略", "视觉识别", "角色 IP", "公益活动与应用"],
+    gallery: [
+      { src: "assets/projects/yappa/01.webp", caption: "项目介绍 · Project overview" },
+      { src: "assets/projects/yappa/02.webp", caption: "品牌策略与受众 · Brand strategy" },
+      { src: "assets/projects/yappa/03.webp", caption: "深海角色 IP 与公益应用 · Character IP & campaign" },
+      { src: "assets/projects/yappa/04.webp", caption: "视觉识别与品牌延展 · Brand identity" },
+    ],
+    description: {
+      en: [
+        "Yappa is a socially conscious brand developed in response to UNESCO's ocean conservation challenge, designed to inspire children aged 3–9 to connect with marine life through playful and emotionally engaging experiences.",
+        "Built around the concept of \"Yappa and Your Friends,\" the project combines brand strategy, visual identity, and seven distinctive deep-sea character IPs to transform ocean conservation into an accessible and meaningful narrative. The identity extends across awareness campaigns, interactive installations, children's toys, and branded merchandise, with age-specific communication strategies that guide children from curiosity and emotional connection towards a lasting sense of responsibility for protecting marine ecosystems.",
+      ],
+      zh: [
+        "Yappa 是一个以联合国教科文组织（UNESCO）海洋保护议题为背景、面向 3–9 岁儿童的公益品牌设计项目，旨在通过情感化的品牌体验，激发儿童对深海生物的好奇心与保护意识。",
+        "项目以“Yappa and Your Friends”为核心理念，通过品牌策略、视觉识别系统及七个具有独特性格的深海生物角色 IP，将海洋保护知识转化为富有趣味性与情感共鸣的品牌叙事。设计延展至公益海报、互动装置、儿童玩具及品牌周边等多个应用场景，并针对不同年龄段构建渐进式的沟通策略，引导儿童从认识海洋生物、建立情感连接，逐步发展为主动保护海洋生态的责任感。",
+      ],
+    },
+  },
+  {
     title: "SEAFRONT",
     en: "临海露营",
     category: "Brand Identity / Visual Communication",

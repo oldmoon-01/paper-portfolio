@@ -581,7 +581,7 @@ function spawnPaper(index, i) {
   const base = createPaperMesh(anim, index);
   base.mesh.castShadow = true;
   base.mesh.rotation.set(0, Math.PI + rand(-0.25, 0.25), rand(-0.18, 0.18));
-  // 前三个落在固定位置，其余随机散在舞台中间
+  // 前三个落在固定位置，其余随机散在舞台中间。
   const w = STAGE.maxX - radius * 1.5;
   const fixed = [[-0.52, -0.1], [0, 0.12], [0.52, -0.06]][i];
   const [x, z] = fixed ? [fixed[0] * w, fixed[1]] : [rand(-w, w) * 0.8, rand(-0.45, 1.0)];
