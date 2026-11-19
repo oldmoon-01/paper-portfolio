@@ -242,6 +242,7 @@ window.PROJECTS = [
     deliverables: ["创意推广物料", "纸币视觉设计", "互动二维码"],
     gallery: [
       { src: "assets/projects/rex/01.webp", caption: "REX Dollars · CES 2026" },
+      { src: "assets/projects/rex/02.webp", caption: "品牌视觉识别规范 · Brand identity guidelines" },
     ],
     description: {
       en: [
