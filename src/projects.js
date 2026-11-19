@@ -216,6 +216,8 @@ window.PROJECTS = [
     gallery: [
       { src: "assets/projects/2077ai/01.webp", caption: "易拉宝、宣传折页与成果海报 · Roll-up, flyers & achievement posters" },
       { src: "assets/projects/2077ai/02.webp", caption: "2077 Ventures 发布活动 · Launch event" },
+      { src: "assets/projects/2077ai/03.webp", caption: "品牌视觉识别规范 · Brand identity guidelines" },
+      { src: "assets/projects/2077ai/04.webp", caption: "品牌视觉识别规范 · Brand identity guidelines" },
     ],
     description: {
       en: [
